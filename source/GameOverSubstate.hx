@@ -50,7 +50,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		super();
 		makeInterpreterGroup(
-			"mods/menus/substates/"+Type.getClassName(Type.getClass(this)).replace('Substate','Addons.hx')
+			"menus/substates/"+Type.getClassName(Type.getClass(this)).replace('Substate','Addons.hx')
 		);
 		PlayState.instance.setOnLuas('inGameOver', true);
 

@@ -12,12 +12,24 @@ import script.ScriptUtil;
 import sys.FileSystem;
 import sys.io.File;
 #end
+using StringTools;
 
 class MusicBeatSubstate extends FlxSubState
 {
 	public function new()
 	{
 		super();
+		
+		var name = Type.getClassName(Type.getClass(this));
+		if(name == "GameOverSubstate"){
+			name = "GameOverSubState"; //This is dumb lol but lua script compatibility demands it
+		}
+		var path = "menus/substates/"+name.replace('SubState','Addons')+".hx";
+		//var nameNew = "menus/"+Type.getClassName(Type.getClass(this)).replace('State','Addons.hx');
+		//makeFileDebug();
+		makeInterpreterGroup(
+			path
+		);
 	}
 
 	private var lastBeat:Float = 0;
@@ -35,6 +47,9 @@ class MusicBeatSubstate extends FlxSubState
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
+
+
+	
 	override function update(elapsed:Float)
 	{
 		//everyStep();
@@ -66,6 +81,16 @@ class MusicBeatSubstate extends FlxSubState
 		var shit = ((Conductor.songPosition - ClientPrefs.noteOffset) - lastChange.songTime) / lastChange.stepCrochet;
 		curDecStep = lastChange.stepTime + shit;
 		curStep = lastChange.stepTime + Math.floor(shit);
+	}
+	
+	public function makeFileDebug():Void
+	{
+		var name = Type.getClassName(Type.getClass(this));
+		if(name == "GameOverSubstate"){
+			name = "GameOverSubState"; //This is dumb lol but lua script compatibility demands it
+		}
+		var path = "menus/substates/"+name.replace('SubState','Addons')+".hx";
+		sys.io.File.saveContent(path, "trace('"+path+" has loaded succesfully')");
 	}
 	
 	public function makeInterpreterGroup(file:String):Void

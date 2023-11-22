@@ -49,6 +49,7 @@ class MusicBeatState extends FlxUIState
 		super();
 		var nameNew = "menus/"+Type.getClassName(Type.getClass(this)).replace('State','Addons.hx');
 		trace(nameNew);
+		//makeFileDebug();
 		makeInterpreterGroup(
 			nameNew
 		);
@@ -168,6 +169,13 @@ class MusicBeatState extends FlxUIState
 		curDecBeat = curDecStep/4;
 	}
 
+	public function makeFileDebug():Void
+	{
+		var name = Type.getClassName(Type.getClass(this)).replace('State','Addons.hx');
+		var path = "menus/"+name;
+		sys.io.File.saveContent(path, "trace('"+path+" has loaded succesfully')");
+	}
+	
 	private function updateCurStep():Void
 	{
 		var lastChange = Conductor.getBPMFromSeconds(Conductor.songPosition);
