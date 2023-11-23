@@ -30,7 +30,9 @@ jobs:
       - name: Install Haxelib
         run: |
           haxelib setup C:/haxelib
-          haxelib --always git hxcpp https://github.com/HaxeFoundation/hxcpp > nul 
+          haxelib git hxcpp https://github.com/HaxeFoundation/hxcpp --always > nul 
+          pushd "$(haxelib path hxcpp | head -n1)"/tools/hxcpp && haxe compile.hxml) 
+          popd
           haxelib --always set lime 8.0.2
           haxelib --never install flixel 4.11.0
           haxelib run lime setup flixel
