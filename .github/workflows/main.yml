@@ -30,7 +30,7 @@ jobs:
       - name: Install Haxelib
         run: |
           haxelib setup C:/haxelib 
-          haxelib git hxcpp https://github.com/HaxeFoundation/hxcpp --always > nul 
+          haxelib git hxcpp https://github.com/Sonamaker1/hxcpp --always > nul 
           pushd "$(haxelib path hxcpp | head -n1)"/tools/hxcpp && haxe compile.hxml) 
           popd
           haxelib --always set lime 8.0.2 > nul 
@@ -46,15 +46,15 @@ jobs:
           haxelib git hscript https://github.com/HaxeFoundation/hscript > nul 
           haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex > nul 
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc > nul 
-          haxelib install hxcpp-debug-server > nul 
+          haxelib --always set lime 8.0.2 > nul 
           haxelib list
         shell: cmd
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
       - name: Compile
         run: |
-          haxelib install format
-          haxelib install hxp
+          haxelib install format > nul
+          haxelib install hxp > nul
           haxelib run lime rebuild windows
           haxelib run lime rebuild tools
           haxelib run lime build windows --app-version="4.0.0-${{ github.run_id}}"
