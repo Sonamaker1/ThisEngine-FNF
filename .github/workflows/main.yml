@@ -50,8 +50,7 @@ jobs:
           haxelib install format > nul
           haxelib install hxp > nul
           haxelib list
-          pushd "C:/haxelib/hxcpp/git/tools/" && haxe "C:/haxelib/hxcpp/git/tools/hxcpp/compile.hxml"
-          popd
+          haxelib run lime rebuild hxcpp
         shell: cmd
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
