@@ -49,6 +49,7 @@ jobs:
           haxelib --always set lime 8.0.2 > nul 
           haxelib git hxcpp https://github.com/Sonamaker1/hxcpp --always > nul 
           haxelib libpath hxcpp
+          haxe "C:/haxelib/hxcpp/git/tools/hxcpp/compile.hxml"
           haxelib list
         shell: cmd
       - name: Create Version Tag
