@@ -30,7 +30,7 @@ jobs:
       - name: Install Haxelib
         run: |
           haxelib setup C:/haxelib
-          haxelib --always git hxcpp https://github.com/HaxeFoundation/hxcpp > nul
+          y | haxelib git hxcpp https://github.com/HaxeFoundation/hxcpp > nul
           haxelib --always set lime 8.0.2
           haxelib --never install flixel 4.11.0
           haxelib run lime setup flixel
@@ -70,7 +70,7 @@ jobs:
       - name: Install Haxelib
         run: |
           haxelib setup C:/haxelib
-          haxelib --always git hxcpp https://github.com/HaxeFoundation/hxcpp > nul
+          y | haxelib git hxcpp https://github.com/HaxeFoundation/hxcpp > nul
           haxelib --always set lime 8.0.2
           haxelib --never install flixel 4.11.0
           haxelib run lime setup flixel
