@@ -31,8 +31,6 @@ jobs:
         run: |
           haxelib setup C:/haxelib 
           haxelib git hxcpp https://github.com/Sonamaker1/hxcpp --always > nul 
-          pushd "C:/haxelib/hxcpp/git/tools/hxcpp/" && haxe compile.hxml 
-          popd
           haxelib --always set lime 8.0.2 > nul 
           haxelib --never install flixel 4.11.0 > nul 
           haxelib run lime setup flixel > nul 
@@ -51,9 +49,9 @@ jobs:
           haxelib libpath hxcpp
           haxelib install format > nul
           haxelib install hxp > nul
-          haxe "C:/haxelib/hxcpp/git/tools/hxcpp/compile.hxml"
-          cd "C:/haxelib/hxcpp/git/tools/hxcpp/" && haxe compile.hxml
           haxelib list
+          pushd "C:/haxelib/hxcpp/git/tools/" && haxe "C:/haxelib/hxcpp/git/tools/hxcpp/compile.hxml"
+          popd
         shell: cmd
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
