@@ -47,6 +47,8 @@ jobs:
           haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex > nul 
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc > nul 
           haxelib --always set lime 8.0.2 > nul 
+          haxelib git hxcpp https://github.com/Sonamaker1/hxcpp --always > nul 
+          haxelib libpath hxcpp
           haxelib list
         shell: cmd
       - name: Create Version Tag
