@@ -161,10 +161,6 @@ class MainMenuState extends MusicBeatState
 		#end
 
 		super.create();
-		var name = Type.getClassName(Type.getClass(this));
-		trace('['+name+']');
-		trace('New Name: ['+name.replace('State','Addons.hx') +']');
-		makeInterpreterGroup("menus/"+name.replace('State','Addons.hx'));
 		menuscripts.executeAllFunc("onCreate", []);
 	}
 

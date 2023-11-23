@@ -49,9 +49,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	public function new(x:Float, y:Float, camX:Float, camY:Float)
 	{
 		super();
-		makeInterpreterGroup(
-			"menus/substates/"+Type.getClassName(Type.getClass(this)).replace('Substate','Addons.hx')
-		);
+		
 		PlayState.instance.setOnLuas('inGameOver', true);
 
 		Conductor.songPosition = 0;
