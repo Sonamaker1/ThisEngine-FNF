@@ -1,5 +1,9 @@
 package;
 
+import backend.ClientPrefs;
+import substates.PauseSubState;
+import substates.GameOverSubstate;
+
 import flixel.graphics.FlxGraphic;
 import flixel.FlxG;
 import flixel.FlxGame;

@@ -2541,6 +2541,11 @@ class PlayState extends MusicBeatState
 	}
 
 	public function triggerEventNote(eventName:String, value1:String, value2:String) {
+		var flValue1:Null<Float> = Std.parseFloat(value1);
+		var flValue2:Null<Float> = Std.parseFloat(value2);
+		if(Math.isNaN(flValue1)) flValue1 = null;
+		if(Math.isNaN(flValue2)) flValue2 = null;
+
 		switch(eventName) {
 			case 'Dadbattle Spotlight':
 				var val:Null<Int> = Std.parseInt(value1);
@@ -2812,6 +2817,10 @@ class PlayState extends MusicBeatState
 				} else {
 					FunkinLua.setVarInArray(this, value1, value2);
 				}
+				
+			case 'Play Sound':
+				if(flValue2 == null) flValue2 = 1;
+				FlxG.sound.play(Paths.sound(value1), flValue2);
 		}
 		callOnLuas('onEvent', [eventName, value1, value2]);
 	}
