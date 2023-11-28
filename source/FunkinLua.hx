@@ -8,6 +8,7 @@ import llua.State;
 import llua.Convert;
 #end
 
+import tools.DialogueUtil;
 import animateatlas.AtlasFrameMaker;
 import flixel.FlxG;
 import flixel.addons.effects.FlxTrail;
@@ -33,6 +34,7 @@ import flixel.math.FlxMath;
 import flixel.util.FlxSave;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.system.FlxAssets.FlxShader;
+import flixel.addons.display.FlxBackdrop;
 
 #if (!flash && sys)
 import flixel.addons.display.FlxRuntimeShader;
@@ -118,25 +120,27 @@ class FunkinLua {
 
 		// Song/Week shit
 		set('curBpm', Conductor.bpm);
-		set('bpm', PlayState.SONG.bpm);
-		set('scrollSpeed', PlayState.SONG.speed);
 		set('crochet', Conductor.crochet);
 		set('stepCrochet', Conductor.stepCrochet);
 		set('songLength', FlxG.sound.music.length);
-		set('songName', PlayState.SONG.song);
-		set('songPath', Paths.formatToSongPath(PlayState.SONG.song));
-		set('startedCountdown', false);
-		set('curStage', PlayState.SONG.stage);
 
-		set('isStoryMode', PlayState.isStoryMode);
-		set('difficulty', PlayState.storyDifficulty);
+		if(PlayState.SONG!=null){
+			set('bpm', PlayState.SONG.bpm);
+			set('scrollSpeed', PlayState.SONG.speed);
+			set('songName', PlayState.SONG.song);
+			set('songPath', Paths.formatToSongPath(PlayState.SONG.song));
+			set('curStage', PlayState.SONG.stage);
+			set('startedCountdown', false);
+			set('isStoryMode', PlayState.isStoryMode);
+			set('difficulty', PlayState.storyDifficulty);
 
-		var difficultyName:String = CoolUtil.difficulties[PlayState.storyDifficulty];
-		set('difficultyName', difficultyName);
-		set('difficultyPath', Paths.formatToSongPath(difficultyName));
-		set('weekRaw', PlayState.storyWeek);
-		set('week', WeekData.weeksList[PlayState.storyWeek]);
-		set('seenCutscene', PlayState.seenCutscene);
+			var difficultyName:String = CoolUtil.difficulties[PlayState.storyDifficulty];
+			set('difficultyPath', Paths.formatToSongPath(difficultyName));
+			set('difficultyName', difficultyName);
+			set('weekRaw', PlayState.storyWeek);
+			set('week', WeekData.weeksList[PlayState.storyWeek]);
+			set('seenCutscene', PlayState.seenCutscene);
+		}
 
 		// Camera poo
 		set('cameraX', 0);
@@ -166,33 +170,34 @@ class FunkinLua {
 		set('altAnim', false);
 		set('gfSection', false);
 
-		// Gameplay settings
-		set('healthGainMult', PlayState.instance.healthGain);
-		set('healthLossMult', PlayState.instance.healthLoss);
-		set('playbackRate', PlayState.instance.playbackRate);
-		set('instakillOnMiss', PlayState.instance.instakillOnMiss);
-		set('botPlay', PlayState.instance.cpuControlled);
-		set('practice', PlayState.instance.practiceMode);
+		if(PlayState.SONG!=null){
+			// Gameplay settings
+			set('healthGainMult', PlayState.instance.healthGain);
+			set('healthLossMult', PlayState.instance.healthLoss);
+			set('instakillOnMiss', PlayState.instance.instakillOnMiss);
+			set('botPlay', PlayState.instance.cpuControlled);
+			set('practice', PlayState.instance.practiceMode);
 
-		for (i in 0...4) {
-			set('defaultPlayerStrumX' + i, 0);
-			set('defaultPlayerStrumY' + i, 0);
-			set('defaultOpponentStrumX' + i, 0);
-			set('defaultOpponentStrumY' + i, 0);
+			for (i in 0...4) {
+				set('defaultPlayerStrumX' + i, 0);
+				set('defaultPlayerStrumY' + i, 0);
+				set('defaultOpponentStrumX' + i, 0);
+				set('defaultOpponentStrumY' + i, 0);
+			}
+
+			// Default character positions woooo
+			set('defaultBoyfriendX', PlayState.instance.BF_X);
+			set('defaultBoyfriendY', PlayState.instance.BF_Y);
+			set('defaultOpponentX', PlayState.instance.DAD_X);
+			set('defaultOpponentY', PlayState.instance.DAD_Y);
+			set('defaultGirlfriendX', PlayState.instance.GF_X);
+			set('defaultGirlfriendY', PlayState.instance.GF_Y);
+
+			// Character shit
+			set('boyfriendName', PlayState.SONG.player1);
+			set('dadName', PlayState.SONG.player2);
+			//set('gfName', PlayState.SONG.player3);
 		}
-
-		// Default character positions woooo
-		set('defaultBoyfriendX', PlayState.instance.BF_X);
-		set('defaultBoyfriendY', PlayState.instance.BF_Y);
-		set('defaultOpponentX', PlayState.instance.DAD_X);
-		set('defaultOpponentY', PlayState.instance.DAD_Y);
-		set('defaultGirlfriendX', PlayState.instance.GF_X);
-		set('defaultGirlfriendY', PlayState.instance.GF_Y);
-
-		// Character shit
-		set('boyfriendName', PlayState.SONG.player1);
-		set('dadName', PlayState.SONG.player2);
-		set('gfName', PlayState.SONG.gfVersion);
 
 		// Some settings, no jokes
 		set('downscroll', ClientPrefs.downScroll);
@@ -2155,6 +2160,61 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "getRandomBool", function(chance:Float = 50) {
 			return FlxG.random.bool(chance);
 		});
+		Lua_helper.add_callback(lua, "say", function( dialogue:String, characterName:String)
+		{
+			trace("quick-say");
+			//var getCharacter = new DialogueCharacter(0,0, characterName);
+			var line = DialogueUtil.makeLine(dialogue, characterName, 'talk', 'normal', 0.05, '');
+			//trace(line);
+			return 0;
+		});
+
+
+		Lua_helper.add_callback(lua, "sayOption", function(id:Int, property:String, action:Dynamic)
+		{
+			var sayLine = DialogueUtil.getLine(id);
+			Reflect.setProperty(sayLine, property, action);
+			trace("Altered: ["+sayLine.text + "], "+property +":" + action);
+			return 0;
+		});
+	
+		//This does not usually work but hey there's a chance it will
+		Lua_helper.add_callback(lua, "addDialogue", function( dialogue:String, characterName:String, expression:String, boxState:String, speed:Float, sound:String)
+		{	
+			//expression:String = 'talk'
+			//boxState:String = 'normal'
+			//speed:Float = 0.05
+			//sound:String = ''
+
+			trace("ack");
+			//var getCharacter = new DialogueCharacter(0,0, characterName);
+			var line = DialogueUtil.makeLine(dialogue, characterName, expression,  boxState, speed, sound);
+			//trace(line);
+			return 1;
+		});
+		
+
+		Lua_helper.add_callback(lua, "clearDialogue", function() {
+			DialogueUtil.buffer = [];
+			return 0;
+		});
+
+		Lua_helper.add_callback(lua, "sayDialogue", function( music:String = null) {
+			var shit:DialogueFile = {dialogue: DialogueUtil.buffer};
+			if(shit.dialogue.length > 0) {
+				PlayState.instance.startDialogue(shit, music);
+				luaTrace('startDialogue: Successfully loaded dialogue', false, false, FlxColor.GREEN);
+				return true;
+			} else {
+				luaTrace('startDialogue: Your dialogue file is badly formatted!', false, false, FlxColor.RED);
+				if(PlayState.instance.endingSong) {
+					PlayState.instance.endSong();
+				} else {
+					PlayState.instance.startCountdown();
+				}
+			}
+			return false;
+		});
 		Lua_helper.add_callback(lua, "startDialogue", function(dialogueFile:String, music:String = null) {
 			var path:String;
 			#if MODS_ALLOWED
@@ -3437,6 +3497,20 @@ class HScript
 			}
 			return false;
 		});
+		//Cursed option for the funny
+		interp.variables.set('addLuaToHscript', function(the_set_of_all_things_can_contain_itself:Bool)
+		{
+			if(the_set_of_all_things_can_contain_itself){
+				trace(Lua_helper.callbacks.keys());
+				for(v in Lua_helper.callbacks.keys()){
+					interp.variables.set(v,
+						Lua_helper.callbacks.get(v)
+					);
+				}
+			}
+		});
+
+		
 	}
 
 	public function execute(codeToRun:String):Dynamic

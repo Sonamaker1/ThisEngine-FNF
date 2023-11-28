@@ -1,5 +1,5 @@
 package;
-
+import tools.DialogueUtil; 
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -644,6 +644,7 @@ class PlayState extends MusicBeatState
 		}
 		//W, TODO: fast cars and flxTrails go here
 
+		DialogueUtil.buffer = [];
 		var file:String = Paths.json(songName + '/dialogue'); //Checks for json/Psych Engine dialogue
 		if (OpenFlAssets.exists(file)) {
 			dialogueJson = DialogueBoxPsych.parseDialogue(file);
@@ -1805,6 +1806,9 @@ class PlayState extends MusicBeatState
 
 	function eventPushed(event:EventNote) {
 		switch(event.event) {
+			case 'Play Sound':
+				precacheList.set(event.value1, 'sound');
+				Paths.sound(event.value1);
 			case 'Change Character':
 				var charType:Int = 0;
 				switch(event.value1.toLowerCase()) {
