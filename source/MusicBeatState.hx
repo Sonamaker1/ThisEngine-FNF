@@ -53,6 +53,9 @@ class MusicBeatState extends FlxUIState
 		makeInterpreterGroup(
 			nameNew
 		);
+		
+		if(menuscripts!=null)
+			menuscripts.executeAllFunc("super_new", [this]);
 	}
 
 		
@@ -67,6 +70,7 @@ class MusicBeatState extends FlxUIState
 		FlxTransitionableState.skipNextTransOut = false;
 	}
 
+	var first_run = 0;
 	override function update(elapsed:Float)
 	{
 		//everyStep();
@@ -92,6 +96,11 @@ class MusicBeatState extends FlxUIState
 		if(FlxG.save.data != null) FlxG.save.data.fullscreen = FlxG.fullscreen;
 
 		super.update(elapsed);
+		
+		if(menuscripts!=null && first_run == 0){
+			menuscripts.executeAllFunc("super_runOnce", []);
+			first_run++;
+		}
 		
 		if(menuscripts!=null)
 			menuscripts.executeAllFunc("super_update", [elapsed]);
