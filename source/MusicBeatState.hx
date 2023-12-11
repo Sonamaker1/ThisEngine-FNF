@@ -43,7 +43,6 @@ class MusicBeatState extends FlxUIState
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
-	
 	public function new()
 	{
 		super();
@@ -256,5 +255,12 @@ class MusicBeatState extends FlxUIState
 		var val:Null<Float> = 4;
 		if(PlayState.SONG != null && PlayState.SONG.notes[curSection] != null) val = PlayState.SONG.notes[curSection].sectionBeats;
 		return val == null ? 4 : val;
+	}
+	
+	//Hi 7oltan lol
+	override function draw(){
+		menuscripts.executeAllFunc("super_draw", []);
+		super.draw();
+		menuscripts.executeAllFunc("super_drawPost", []);
 	}
 }

@@ -41,7 +41,7 @@ class DialogueUtil extends FlxSpriteGroup
     private static var DEFAULT_TEXT:String = "coolswag";
 	private static var DEFAULT_SPEED:Float = 0.05;
 	private static var DEFAULT_BUBBLETYPE:String = "normal";
-    
+    public static var skipNextClear = false;
     public static var buffer:Array<DialogueLine> = [];
 
     public static function makeLine(

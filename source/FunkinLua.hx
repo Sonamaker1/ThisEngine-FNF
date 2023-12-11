@@ -1053,8 +1053,26 @@ class FunkinLua {
 			Reflect.getProperty(getInstance(), obj).remove(Reflect.getProperty(getInstance(), obj)[index]);
 		});
 
-		Lua_helper.add_callback(lua, "getPropertyFromClass", function(classVar:String, variable:String) {
+		Lua_helper.add_callback(lua, "getPropertyFromClass", function(classVarInput:String, variable:String) {
 			@:privateAccess
+			var classVar = classVarInput;
+			trace("Is clientprefs? " + (classVar.indexOf("backend.ClientPrefs")>=0));
+			
+			//Is this a 0.7 thing?
+			var isZeroPointSeven = classVar.indexOf("backend.")>=0 ||
+				classVar.indexOf("states.")>=0||
+				classVar.indexOf("substates.")>=0;
+				
+			//Has this been back-ported already?
+			var isMapped = classVar.indexOf("substates.GameOverSubstate")>=0 || 
+				classVar.indexOf("substates.PauseSubState")>=0 || 
+				classVar.indexOf("backend.ClientPrefs")>=0;
+			
+			if( isZeroPointSeven && !isMapped ){
+				var splitIt=classVar.split('.');
+				classVar = classVar.split('.').slice(1,splitIt.length).join("");
+			}
+			
 			var killMe:Array<String> = variable.split('.');
 			if(killMe.length > 1) {
 				var coverMeInPiss:Dynamic = getVarInArray(Type.resolveClass(classVar), killMe[0]);
@@ -1065,8 +1083,26 @@ class FunkinLua {
 			}
 			return getVarInArray(Type.resolveClass(classVar), variable);
 		});
-		Lua_helper.add_callback(lua, "setPropertyFromClass", function(classVar:String, variable:String, value:Dynamic) {
+		Lua_helper.add_callback(lua, "setPropertyFromClass", function(classVarInput:String, variable:String, value:Dynamic) {
 			@:privateAccess
+			var classVar = classVarInput;
+			trace("Is clientprefs? " + (classVar.indexOf("backend.ClientPrefs")>=0));
+			
+			//Is this a 0.7 thing?
+			var isZeroPointSeven = classVar.indexOf("backend.")>=0 ||
+				classVar.indexOf("states.")>=0||
+				classVar.indexOf("substates.")>=0;
+				
+			//Has this been back-ported already?
+			var isMapped = classVar.indexOf("substates.GameOverSubstate")>=0 || 
+				classVar.indexOf("substates.PauseSubState")>=0 || 
+				classVar.indexOf("backend.ClientPrefs")>=0;
+			
+			if( isZeroPointSeven && !isMapped ){
+				var splitIt=classVar.split('.');
+				classVar = classVar.split('.').slice(1,splitIt.length).join("");
+			}
+			
 			var killMe:Array<String> = variable.split('.');
 			if(killMe.length > 1) {
 				var coverMeInPiss:Dynamic = getVarInArray(Type.resolveClass(classVar), killMe[0]);

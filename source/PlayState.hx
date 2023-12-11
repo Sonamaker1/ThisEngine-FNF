@@ -643,8 +643,12 @@ class PlayState extends MusicBeatState
 				gf.visible = false;
 		}
 		//W, TODO: fast cars and flxTrails go here
-
-		DialogueUtil.buffer = [];
+		if(!DialogueUtil.skipNextClear){
+			DialogueUtil.buffer = [];
+		}
+		else{
+			DialogueUtil.skipNextClear = false;
+		}
 		var file:String = Paths.json(songName + '/dialogue'); //Checks for json/Psych Engine dialogue
 		if (OpenFlAssets.exists(file)) {
 			dialogueJson = DialogueBoxPsych.parseDialogue(file);
@@ -1267,6 +1271,24 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	public function sayDialogue(?music:String = null):Void {
+		var shit:DialogueFile = {dialogue: DialogueUtil.buffer};
+		if(shit.dialogue.length > 0) {
+			PlayState.instance.startDialogue(shit, music);
+			return;
+		} else {
+			if(PlayState.instance.endingSong) {
+				PlayState.instance.endSong();
+			} else {
+				PlayState.instance.startCountdown();
+			}
+		}
+	}
+	
+	public function clearDialogue() {
+		DialogueUtil.buffer = [];
+		return 0;
+	}
 	//Removed intro function stuff lol
 
 	var startTimer:FlxTimer;
@@ -2441,6 +2463,14 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	override function draw(){
+		if(scripts!=null)
+			scripts.executeAllFunc("onDraw", []);
+		super.draw();
+		if(scripts!=null)
+			scripts.executeAllFunc("onDrawPost", []);
+	}
+	
 	function openPauseMenu()
 	{
 		persistentUpdate = false;
@@ -4205,7 +4235,7 @@ class PlayState extends MusicBeatState
 				scripts.addScript(scriptName).executeString(hxData);
 			else
 			{
-				scripts.getScriptByTag(scriptName).error("Duplacite Script Error!", '$scriptName: Duplicate Script');
+				scripts.getScriptByTag(scriptName).error("Duplicate Script Error!", '$scriptName: Duplicate Script');
 			}
 		}
 	}
