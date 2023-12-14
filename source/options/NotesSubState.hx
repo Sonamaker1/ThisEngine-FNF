@@ -86,6 +86,14 @@ class NotesSubState extends MusicBeatSubstate
 		hsbText = new Alphabet(posX + 560, 0, "Hue    Saturation  Brightness", false);
 		hsbText.scaleX = 0.6;
 		hsbText.scaleY = 0.6;
+
+		if(OptionsState.darkModeEnabled){
+			@:privateAccess
+			for (sprite in hsbText._sprites)
+			{
+				OptionsState.transformColor(sprite,255,255,255);
+			}
+		}
 		add(hsbText);
 
 		changeSelection();

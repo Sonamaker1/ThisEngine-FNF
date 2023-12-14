@@ -95,6 +95,14 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			optionText.yMult = 90;*/
 			optionText.targetY = i;
 			grpOptions.add(optionText);
+			
+			if(OptionsState.darkModeEnabled){
+				@:privateAccess
+				for (sprite in optionText._sprites)
+				{
+					OptionsState.transformColor(sprite,255,255,255);
+				}
+			}
 
 			if(optionsArray[i].type == 'bool') {
 				var checkbox:CheckboxThingie = new CheckboxThingie(optionText.x - 105, optionText.y, optionsArray[i].getValue() == true);
@@ -111,6 +119,14 @@ class BaseOptionsMenu extends MusicBeatSubstate
 				valueText.ID = i;
 				grpTexts.add(valueText);
 				optionsArray[i].setChild(valueText);
+				
+				if(OptionsState.darkModeEnabled){
+					@:privateAccess
+					for (sprite in valueText._sprites)
+					{
+						OptionsState.transformColor(sprite,255,255,255);
+					}
+				}
 			}
 			//optionText.snapToPosition(); //Don't ignore me when i ask for not making a fucking pull request to uncomment this line ok
 
@@ -128,6 +144,13 @@ class BaseOptionsMenu extends MusicBeatSubstate
 	public function addOption(option:Option) {
 		if(optionsArray == null || optionsArray.length < 1) optionsArray = [];
 		optionsArray.push(option);
+		@:privateAccess
+		if(option.child!=null && OptionsState.darkModeEnabled){
+			for (sprite in option.child._sprites)
+			{
+				OptionsState.transformColor(sprite,255,255,255);
+			}
+		}
 	}
 
 	var nextAccept:Int = 5;

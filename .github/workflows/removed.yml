@@ -1,0 +1,68 @@
+# This is a basic workflow to help you get started with Actions
+
+name: RemovedInstructions
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  buildWindows:
+    runs-on: windows-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2.3.0
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.2.5
+      # Runs a set of commands using the runners shell
+      - name: Install Haxelib
+        run: |
+          haxelib setup C:/haxelib 
+          haxelib git hxcpp https://github.com/Sonamaker1/hxcpp --always > nul 
+          haxelib --always set lime 8.0.2 > nul 
+          haxelib --never install flixel 4.11.0 > nul 
+          haxelib run lime setup flixel > nul 
+          haxelib run lime setup > nul 
+          haxelib --always set openfl 9.2.1 > nul 
+          haxelib --always set flixel-tools 1.5.1 > nul 
+          haxelib --always set flixel-ui 2.4.0 > nul 
+          haxelib --always set flixel-addons 2.11.0 > nul 
+          haxelib --always set hxCodec 2.5.1 > nul 
+          haxelib git linc_luajit https://github.com/superpowers04/linc_luajit > nul 
+          haxelib git hscript https://github.com/HaxeFoundation/hscript > nul 
+          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex > nul 
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc > nul 
+          haxelib --always set lime 8.0.2 > nul 
+          haxelib git hxcpp https://github.com/Sonamaker1/hxcpp --always > nul 
+          haxelib libpath hxcpp
+          haxelib install format > nul
+          haxelib install hxp > nul
+          haxelib list
+          haxelib run lime rebuild hxcpp
+        shell: cmd
+      - name: Create Version Tag
+        run: echo "${{github.run_id}}" > VERSION
+      - name: Compile
+        run: |
+          haxelib run lime rebuild windows
+          haxelib run lime rebuild tools
+          haxelib run lime build windows --app-version="4.0.0-${{ github.run_id}}"
+          
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: windowsBuild
+          path: export/release/windows/bin
+

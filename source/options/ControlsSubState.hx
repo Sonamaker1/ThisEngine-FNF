@@ -96,6 +96,13 @@ class ControlsSubState extends MusicBeatSubstate {
 				optionText.screenCenter(X);
 				optionText.y -= 55;
 				optionText.startPosition.y -= 55;
+				if(!isDefaultKey && OptionsState.darkModeEnabled){
+					@:privateAccess
+					for (sprite in optionText._sprites)
+					{
+						OptionsState.transformColor(sprite,255,255,255);
+					}
+				}
 			}
 			optionText.changeX = false;
 			optionText.distancePerItem.y = 60;
@@ -279,12 +286,27 @@ class ControlsSubState extends MusicBeatSubstate {
 		text1.sprTracker = optionText;
 		grpInputs.push(text1);
 		add(text1);
+		if(OptionsState.darkModeEnabled){
+			@:privateAccess
+			for (sprite in text1._sprites)
+			{
+				OptionsState.transformColor(sprite,255,255,255);
+			}
+		}
 
 		var text2 = new AttachedText(InputFormatter.getKeyName(keys[1]), 650, -55);
 		text2.setPosition(optionText.x + 650, optionText.y - 55);
 		text2.sprTracker = optionText;
 		grpInputsAlt.push(text2);
 		add(text2);
+		
+		if(OptionsState.darkModeEnabled){
+			@:privateAccess
+			for (sprite in text2._sprites)
+			{
+				OptionsState.transformColor(sprite,255,255,255);
+			}
+		}
 	}
 
 	function reloadKeys() {

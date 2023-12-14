@@ -1056,7 +1056,7 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "getPropertyFromClass", function(classVarInput:String, variable:String) {
 			@:privateAccess
 			var classVar = classVarInput;
-			trace("Is clientprefs? " + (classVar.indexOf("backend.ClientPrefs")>=0));
+			//trace("Is clientprefs? " + (classVar.indexOf("backend.ClientPrefs")>=0));
 			
 			//Is this a 0.7 thing?
 			var isZeroPointSeven = classVar.indexOf("backend.")>=0 ||
@@ -1072,7 +1072,7 @@ class FunkinLua {
 				var splitIt=classVar.split('.');
 				classVar = classVar.split('.').slice(1,splitIt.length).join("");
 			}
-			
+			trace("Asked for "+classVarInput +", so returned "+ classVarInput);
 			var killMe:Array<String> = variable.split('.');
 			if(killMe.length > 1) {
 				var coverMeInPiss:Dynamic = getVarInArray(Type.resolveClass(classVar), killMe[0]);
@@ -1086,7 +1086,7 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "setPropertyFromClass", function(classVarInput:String, variable:String, value:Dynamic) {
 			@:privateAccess
 			var classVar = classVarInput;
-			trace("Is clientprefs? " + (classVar.indexOf("backend.ClientPrefs")>=0));
+			//trace("Is clientprefs? " + (classVar.indexOf("backend.ClientPrefs")>=0));
 			
 			//Is this a 0.7 thing?
 			var isZeroPointSeven = classVar.indexOf("backend.")>=0 ||
@@ -1102,7 +1102,7 @@ class FunkinLua {
 				var splitIt=classVar.split('.');
 				classVar = classVar.split('.').slice(1,splitIt.length).join("");
 			}
-			
+			trace("Asked for "+classVarInput +", so  returned "+ classVarInput);
 			var killMe:Array<String> = variable.split('.');
 			if(killMe.length > 1) {
 				var coverMeInPiss:Dynamic = getVarInArray(Type.resolveClass(classVar), killMe[0]);

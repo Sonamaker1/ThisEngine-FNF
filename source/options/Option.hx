@@ -132,6 +132,13 @@ class Option
 	{
 		if(child != null) {
 			child.text = newValue;
+			if(OptionsState.darkModeEnabled){
+				@:privateAccess
+				for (sprite in child._sprites)
+				{
+					OptionsState.transformColor(sprite,255,255,255);
+				}
+			}
 		}
 		return null;
 	}

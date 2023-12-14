@@ -33,6 +33,15 @@ class OptionsState extends MusicBeatState
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private static var curSelected:Int = 0;
 	public static var menuBG:FlxSprite;
+	public static var darkModeEnabled = false;
+	public static function transformColor(spr:FlxSprite, r:Int, g:Int, b:Int){
+		if ((spr != null) && spr.exists)
+		{
+			spr.colorTransform.redOffset = r;
+			spr.colorTransform.blueOffset = g;
+			spr.colorTransform.greenOffset = b;
+		}
+	}
 
 	function openSelectedSubstate(label:String) {
 		switch(label) {
