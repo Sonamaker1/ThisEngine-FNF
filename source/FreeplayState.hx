@@ -32,7 +32,9 @@ class FreeplayState extends MusicBeatState
 	private static var curSelected:Int = 0;
 	var curDifficulty:Int = -1;
 	private static var lastDifficultyName:String = '';
-
+	public static var currentFreeplayName:String = "";
+	public static var isExclusionMenu:Bool = false;
+	
 	var scoreBG:FlxSprite;
 	var scoreText:FlxText;
 	var diffText:FlxText;
@@ -208,8 +210,23 @@ class FreeplayState extends MusicBeatState
 
 	public function addSong(songName:String, weekNum:Int, songCharacter:String, color:Int)
 	{
-		songs.push(new SongMetadata(songName, weekNum, songCharacter, color));
-	}
+		var canAddThisSong = true;
+		var weekFileName = WeekData.weeksList[weekNum];
+		switch (currentFreeplayName.toLowerCase()){
+			case "": canAddThisSong = true;
+			default: 
+				canAddThisSong = weekFileName.indexOf(currentFreeplayName.toLowerCase()) != -1;
+				if(isExclusionMenu){
+					canAddThisSong = !canAddThisSong;
+				}
+		}
+		
+		
+		
+		if(canAddThisSong){
+			songs.push(new SongMetadata(songName, weekNum, songCharacter, color));
+		}
+	} 
 
 	function weekIsLocked(name:String):Bool {
 		var leWeek:WeekData = WeekData.weeksLoaded.get(name);
