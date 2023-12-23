@@ -15,7 +15,7 @@ import openfl.utils.Assets;
 #end
 import Paths;
 using StringTools;
-
+import Type;
 class CoolUtil
 {
 	public static var defaultDifficulties:Array<String> = [
@@ -209,5 +209,36 @@ class CoolUtil
 	public static inline function getFileStringFromPath(file:String):String
 	{
 		return Path.withoutDirectory(Path.withoutExtension(file));
+	}
+	
+	
+	public static final fail = ["NOT IMPLEMENTED", null];
+	public static function tryOverride(thisContext:Dynamic, functionVariables:Map<String, (Void)->(Void)>, event:String, args:Array<Dynamic>, typeExpected:String):Array<Dynamic>{	
+		
+		try{
+			var ret:haxe.Constraints.Function = functionVariables.get(event);
+			if(ret != null){
+				if(thisContext!=null){
+					args.unshift(thisContext);
+				}
+				var result:Dynamic = Reflect.callMethod(thisContext, ret, args);
+				var typeCheck:Bool = (result == null && typeExpected == "Void") || (Type.getClassName(result) == typeExpected);
+				switch(typeExpected){
+					case "Bool": result = cast(result, Bool); typeCheck = true;
+					case "Int": result = cast(result, Int); typeCheck = true;
+					case "Float": result = cast(result, Float); typeCheck = true;
+				}
+				//trace("Result? ["+typeCheck+"] : {" +result +"} "+ Type.typeof(result) );
+				return typeCheck ? ["success", result]: fail;
+			}
+			else
+			{
+				return fail;
+			}
+		}
+		catch(err){
+			trace("\n["+event+"] Function Error: " + err);
+			return fail;
+		}
 	}
 }

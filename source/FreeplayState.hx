@@ -34,6 +34,7 @@ class FreeplayState extends MusicBeatState
 	private static var lastDifficultyName:String = '';
 	public static var currentFreeplayName:String = "";
 	public static var isExclusionMenu:Bool = false;
+	public static var functionVariables:Map<String, (Void)->(Void)> = new Map();
 	
 	var scoreBG:FlxSprite;
 	var scoreText:FlxText;
@@ -249,6 +250,41 @@ class FreeplayState extends MusicBeatState
 		}
 	}*/
 
+	public function selectionControls(expected:Int):Bool {
+		if(functionVariables.exists("selectionControls")){
+			var overrideFunc = CoolUtil.tryOverride(
+				null, functionVariables, "selectionControls", [expected], "Bool"
+			); 
+			if(overrideFunc[0]!="NOT IMPLEMENTED") 
+				return cast(overrideFunc[1], Bool);
+		}
+
+		return _selectionControls(expected);
+	}
+	
+	function _selectionControls(expected:Int){
+		var upP = controls.UI_UP_P;
+		var downP = controls.UI_DOWN_P;
+		var accepted = controls.ACCEPT;
+		var space = FlxG.keys.justPressed.SPACE;
+		var ctrl = FlxG.keys.justPressed.CONTROL;
+		
+		switch(expected){
+			case -2: return controls.UI_UP;
+			case -1: return controls.UI_UP_P;
+			case 0: return accepted;
+			case 1:  return controls.UI_DOWN_P;
+			case 2:  return controls.UI_DOWN;
+			case 50:  return controls.UI_RIGHT_P;
+			case -50:  return controls.UI_LEFT_P;
+			case -100:  return controls.BACK;
+			case 100:  return space;
+			case 200:  return ctrl;
+			case 300:  return controls.RESET;
+			default: return false;
+		}
+	}
+
 	var instPlaying:Int = -1;
 	public static var vocals:FlxSound = null;
 	var holdTime:Float = 0;
@@ -279,11 +315,11 @@ class FreeplayState extends MusicBeatState
 		scoreText.text = 'PERSONAL BEST: ' + lerpScore + ' (' + ratingSplit.join('.') + '%)';
 		positionHighscore();
 
-		var upP = controls.UI_UP_P;
-		var downP = controls.UI_DOWN_P;
-		var accepted = controls.ACCEPT;
-		var space = FlxG.keys.justPressed.SPACE;
-		var ctrl = FlxG.keys.justPressed.CONTROL;
+		var upP = selectionControls(-1);
+		var downP = selectionControls(1);
+		var accepted = selectionControls(0);
+		var space = selectionControls(100);
+		var ctrl = selectionControls(200);
 
 		var shiftMult:Int = 1;
 		if(FlxG.keys.pressed.SHIFT) shiftMult = 3;
@@ -301,7 +337,7 @@ class FreeplayState extends MusicBeatState
 				holdTime = 0;
 			}
 
-			if(controls.UI_DOWN || controls.UI_UP)
+			if(selectionControls(-2) || selectionControls(2))
 			{
 				var checkLastHold:Int = Math.floor((holdTime - 0.5) * 10);
 				holdTime += elapsed;
@@ -309,7 +345,7 @@ class FreeplayState extends MusicBeatState
 
 				if(holdTime > 0.5 && checkNewHold - checkLastHold > 0)
 				{
-					changeSelection((checkNewHold - checkLastHold) * (controls.UI_UP ? -shiftMult : shiftMult));
+					changeSelection((checkNewHold - checkLastHold) * (selectionControls(-2) ? -shiftMult : shiftMult));
 					changeDiff();
 				}
 			}
@@ -322,13 +358,13 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 
-		if (controls.UI_LEFT_P)
+		if (selectionControls(-50))
 			changeDiff(-1);
-		else if (controls.UI_RIGHT_P)
+		else if (selectionControls(50))
 			changeDiff(1);
 		else if (upP || downP) changeDiff();
 
-		if (controls.BACK)
+		if (selectionControls(-100))
 		{
 			persistentUpdate = false;
 			if(colorTween != null) {
@@ -404,7 +440,7 @@ class FreeplayState extends MusicBeatState
 					
 			destroyFreeplayVocals();
 		}
-		else if(controls.RESET)
+		else if(selectionControls(300))
 		{
 			persistentUpdate = false;
 			openSubState(new ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));

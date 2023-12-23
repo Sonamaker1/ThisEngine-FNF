@@ -27,7 +27,31 @@ class MainMenuState extends MusicBeatState
 {
 	public static var psychEngineVersion:String = '0.6.3'; //This is also used for Discord RPC
 	public static var curSelected:Int = 0;
+	public static var functionVariables:Map<String, (Void)->(Void)> = new Map();
+	public function selectionControls(expected:Int):Bool {
+		if(functionVariables.exists("selectionControls")){
+			var overrideFunc = CoolUtil.tryOverride(
+				null, functionVariables, "selectionControls", [expected], "Bool"
+			); 
+			if(overrideFunc[0]!="NOT IMPLEMENTED") 
+				return cast(overrideFunc[1], Bool);
+		}
 
+		return _selectionControls(expected);
+	}
+	
+	function _selectionControls(expected:Int){
+		switch(expected){
+			case -2: return controls.UI_UP;
+			case -1: return controls.UI_UP_P;
+			case 0:  return controls.ACCEPT;
+			case -100:  return controls.BACK;
+			case 1:  return controls.UI_DOWN_P;
+			case 2:  return controls.UI_DOWN;
+			default: return false;
+		}
+	}
+	
 	var menuItems:FlxTypedGroup<FlxSprite>;
 	private var camGame:FlxCamera;
 	private var camAchievement:FlxCamera;
@@ -188,26 +212,26 @@ class MainMenuState extends MusicBeatState
 
 		if (!selectedSomethin)
 		{
-			if (controls.UI_UP_P)
+			if (selectionControls(-1))
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changeItem(-1);
 			}
 
-			if (controls.UI_DOWN_P)
+			if (selectionControls(1))
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changeItem(1);
 			}
 
-			if (controls.BACK)
+			if (selectionControls(-100))
 			{
 				selectedSomethin = true;
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 				MusicBeatState.switchState(new TitleState());
 			}
 
-			if (controls.ACCEPT)
+			if (selectionControls(0))
 			{
 				if (optionShit[curSelected] == 'donate')
 				{
@@ -278,7 +302,7 @@ class MainMenuState extends MusicBeatState
 			spr.screenCenter(X); //Screw that lol
 		});
 		*/
-		menuscripts.executeAllFunc("onUpdate", [elapsed]);
+		//menuscripts.executeAllFunc("onUpdate", [elapsed]);
 	}
 
 	function changeItem(huh:Int = 0)

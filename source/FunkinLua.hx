@@ -65,7 +65,8 @@ class FunkinLua {
 	public static var Function_Stop:Dynamic = 1;
 	public static var Function_Continue:Dynamic = 0;
 	public static var Function_StopLua:Dynamic = 2;
-
+	public static var debugTraceClasses:Bool = false;
+	
 	//public var errorHandler:String->Void;
 	#if LUA_ALLOWED
 	public var lua:State = null;
@@ -1072,7 +1073,10 @@ class FunkinLua {
 				var splitIt=classVar.split('.');
 				classVar = classVar.split('.').slice(1,splitIt.length).join("");
 			}
-			trace("Asked for "+classVarInput +", so returned "+ classVarInput);
+			
+			if(FunkinLua.debugTraceClasses)
+				trace("Asked for "+classVarInput +", so returned "+ classVarInput);
+				
 			var killMe:Array<String> = variable.split('.');
 			if(killMe.length > 1) {
 				var coverMeInPiss:Dynamic = getVarInArray(Type.resolveClass(classVar), killMe[0]);
@@ -1102,7 +1106,10 @@ class FunkinLua {
 				var splitIt=classVar.split('.');
 				classVar = classVar.split('.').slice(1,splitIt.length).join("");
 			}
-			trace("Asked for "+classVarInput +", so  returned "+ classVarInput);
+			
+			if(FunkinLua.debugTraceClasses)
+				trace("Asked for "+classVarInput +", so set value at "+ classVarInput);
+				
 			var killMe:Array<String> = variable.split('.');
 			if(killMe.length > 1) {
 				var coverMeInPiss:Dynamic = getVarInArray(Type.resolveClass(classVar), killMe[0]);

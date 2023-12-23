@@ -9,8 +9,16 @@ import flixel.text.FlxText;
 
 using StringTools;
 
+//@:build(macros.TypeBuildingMacro.build("myFunc"))
 class Achievements {
-	public static var achievementsStuff:Array<Dynamic> = [ //Name, Description, Achievement save tag, Hidden achievement
+	public static var achievementsMap:Map<String, Bool> = new Map<String, Bool>();
+	public static var counterVariables:Map<String, Int> = new Map();
+	
+	//move this into counter variables later
+	public static var henchmenDeath:Int = 0; 
+	
+	public static var achievementsStuff:Array<Dynamic> = [ 
+		//Name, Description, Achievement save tag, Hidden achievement
 		["Freaky on a Friday Night",	"Play on a Friday... Night.",						'friday_night_play',	 true],
 		["She Calls Me Daddy Too",		"Beat Week 1 on Hard with no Misses.",				'week1_nomiss',			false],
 		["No More Tricks",				"Beat Week 2 on Hard with no Misses.",				'week2_nomiss',			false],
@@ -28,23 +36,65 @@ class Achievements {
 		["Toaster Gamer",				"Have you tried to run the game on a toaster?",		'toastie',				false],
 		["Debugger",					"Beat the \"Test\" Stage from the Chart Editor.",	'debugger',				 true]
 	];
-	public static var achievementsMap:Map<String, Bool> = new Map<String, Bool>();
 
-	public static var henchmenDeath:Int = 0;
+	public static var functionVariables:Map<String, (Void)->(Void)> = new Map();
 	public static function unlockAchievement(name:String):Void {
-		FlxG.log.add('Completed achievement "' + name +'"');
-		achievementsMap.set(name, true);
-		FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+		if(functionVariables.exists("unlockAchievement")){
+			var overrideFunc = CoolUtil.tryOverride(
+				null, functionVariables, "unlockAchievement", [name], "Void"
+			); 
+			if(overrideFunc[0]!="NOT IMPLEMENTED") 
+				return;
+		}
+
+		return _unlockAchievement(name);
+	}
+	
+	public static function isAchievementUnlocked(name:String):Bool {
+		var overrideFunc = CoolUtil.tryOverride(
+			null, functionVariables, "isAchievementUnlocked", [name], "Bool"
+		); 
+
+		if(overrideFunc[0]!="NOT IMPLEMENTED") 
+			return cast(overrideFunc[1], Bool);
+
+		return _isAchievementUnlocked(name);
 	}
 
-	public static function isAchievementUnlocked(name:String) {
+	public static function getAchievementIndex(name:String):Int {
+		var overrideFunc = CoolUtil.tryOverride(
+			null, functionVariables, "getAchievementIndex", [name], "Int"
+		); 
+
+		if(overrideFunc[0]!="NOT IMPLEMENTED") 
+			return cast(overrideFunc[1],Int);
+
+		return _getAchievementIndex(name);
+	}
+
+	public static function loadAchievements():Void {
+		var overrideFunc = CoolUtil.tryOverride(
+			null, functionVariables, "loadAchievements", [], "Void"
+		); 
+		if(overrideFunc[0]!="NOT IMPLEMENTED") return;
+
+		return _loadAchievements();
+	}
+
+
+	public static function _unlockAchievement(name:String):Void {
+		FlxG.log.add('Completed achievement "' + name +'"');
+		achievementsMap.set(name, true);
+		FlxG.sound.play(Paths.sound('confirmMenu'), 0.7); 
+	}
+	
+	public static function _isAchievementUnlocked(name:String):Bool {
 		if(achievementsMap.exists(name) && achievementsMap.get(name)) {
 			return true;
 		}
 		return false;
 	}
-
-	public static function getAchievementIndex(name:String) {
+	public static function _getAchievementIndex(name:String):Int {
 		for (i in 0...achievementsStuff.length) {
 			if(achievementsStuff[i][2] == name) {
 				return i;
@@ -52,8 +102,7 @@ class Achievements {
 		}
 		return -1;
 	}
-
-	public static function loadAchievements():Void {
+	public static function _loadAchievements():Void {		
 		if(FlxG.save.data != null) {
 			if(FlxG.save.data.achievementsMap != null) {
 				achievementsMap = FlxG.save.data.achievementsMap;
@@ -68,19 +117,34 @@ class Achievements {
 class AttachedAchievement extends FlxSprite {
 	public var sprTracker:FlxSprite;
 	private var tag:String;
+	public static var functionVariables:Map<String, (Void)->(Void)> = new Map();
+	
 	public function new(x:Float = 0, y:Float = 0, name:String) {
 		super(x, y);
 
 		changeAchievement(name);
 		antialiasing = ClientPrefs.globalAntialiasing;
 	}
-
 	public function changeAchievement(tag:String) {
+		var overrideFunc = CoolUtil.tryOverride(this, functionVariables,
+			"changeAchievement", [tag], "Void"
+		); 
+		if(overrideFunc[0]!="NOT IMPLEMENTED") {
+			return;
+		}
 		this.tag = tag;
 		reloadAchievementImage();
 	}
-
 	public function reloadAchievementImage() {
+		var overrideFunc = CoolUtil.tryOverride(
+			this, functionVariables,
+			"reloadAchievementImage",
+			[], "Void"
+		); 
+		if(overrideFunc[0]!="NOT IMPLEMENTED") {
+			return;
+		}
+		
 		if(Achievements.isAchievementUnlocked(tag)) {
 			loadGraphic(Paths.image('achievements/' + tag));
 		} else {
@@ -89,8 +153,14 @@ class AttachedAchievement extends FlxSprite {
 		scale.set(0.7, 0.7);
 		updateHitbox();
 	}
-
 	override function update(elapsed:Float) {
+		var overrideFunc = CoolUtil.tryOverride(this, functionVariables,
+			"update", [elapsed], "Void"
+		); 
+		if(overrideFunc[0]!="NOT IMPLEMENTED") {
+			super.update(elapsed); return;
+		}
+		
 		if (sprTracker != null)
 			setPosition(sprTracker.x - 130, sprTracker.y + 25);
 
@@ -101,10 +171,19 @@ class AttachedAchievement extends FlxSprite {
 class AchievementObject extends FlxSpriteGroup {
 	public var onFinish:Void->Void = null;
 	var alphaTween:FlxTween;
+	public static var functionVariables:Map<String, (Void)->(Void)> = new Map();
+	
 	public function new(name:String, ?camera:FlxCamera = null)
 	{
 		super(x, y);
 		ClientPrefs.saveSettings();
+
+		var overrideFunc = CoolUtil.tryOverride(this, functionVariables,
+			"new", [name, camera], "AchievementObject"
+		); 
+		if(overrideFunc[0]!="NOT IMPLEMENTED") {
+			return;
+		}
 
 		var id:Int = Achievements.getAchievementIndex(name);
 		var achievementBG:FlxSprite = new FlxSprite(60, 50).makeGraphic(420, 120, FlxColor.BLACK);
@@ -151,6 +230,13 @@ class AchievementObject extends FlxSpriteGroup {
 	}
 
 	override function destroy() {
+		var overrideFunc = CoolUtil.tryOverride(this, functionVariables,
+			"destroy", [], "Void"
+		); 
+		if(overrideFunc[0]!="NOT IMPLEMENTED") {
+			super.destroy(); return;
+		}
+
 		if(alphaTween != null) {
 			alphaTween.cancel();
 		}
