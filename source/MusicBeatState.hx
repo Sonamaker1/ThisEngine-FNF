@@ -17,6 +17,7 @@ import flixel.FlxBasic;
 import script.Script;
 import script.ScriptGroup;
 import script.ScriptUtil;
+import NewState;
 #if sys
 import sys.FileSystem;
 import sys.io.File;

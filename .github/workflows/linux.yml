@@ -1,12 +1,12 @@
 # Borrowing this setup from codename cause old caching stuff doesn't work anymore
-name: Windows Build
+name: Linux Build
 on:
   push:
 jobs:
   build:
-    name: Windows Build
+    name: Linux Build
     permissions: write-all
-    runs-on: windows-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Pulling the new commit
         uses: actions/checkout@v2
@@ -18,13 +18,16 @@ jobs:
         uses: actions/cache@v3
         with:
           # not caching the bin folder to prevent asset duplication and stuff like that
-          key: cache-build-windows
+          key: cache-build-linux
           path: |
             .haxelib/
-            export/release/windows/haxe/
-            export/release/windows/obj/
+            export/release/linux/haxe/
+            export/release/linux/obj/
           restore-keys: |
-            cache-build-windows
+            cache-build-linux
+      - name: Installing LibVLC
+        run: |
+          sudo apt-get install libvlc-dev libvlccore-dev
       - name: Installing/Updating libraries
         run: |
           haxelib setup C:/haxelib 
@@ -51,7 +54,7 @@ jobs:
           haxelib run lime rebuild hxcpp
       - name: Building the game
         run: |
-          haxelib run lime build windows
+          haxelib run lime build linux
       - name: Uploading artifact (entire build)
         uses: actions/upload-artifact@v2
         with:
@@ -60,8 +63,8 @@ jobs:
       - name: Uploading artifact (executable)
         uses: actions/upload-artifact@v2
         with:
-          name: Update-Windows
-          path: export/release/windows/bin/PsychEngine.exe
+          name: Update-Linux
+          path: export/release/linux/bin/PsychEngine
       - name: Clearing already existing cache
         uses: actions/github-script@v6
         with:
@@ -71,7 +74,7 @@ jobs:
               repo: context.repo.repo,
             })
             for (const cache of caches.data.actions_caches) {
-              if (cache.key == "cache-build-windows") {
+              if (cache.key == "cache-build-linux") {
                 console.log('Clearing ' + cache.key + '...')
                 await github.rest.actions.deleteActionsCacheById({
                   owner: context.repo.owner,
@@ -85,10 +88,10 @@ jobs:
         uses: actions/cache@v3
         with:
           # caching again since for some reason it doesnt work with the first post cache shit
-          key: cache-build-windows
+          key: cache-build-linux
           path: |
             .haxelib/
-            export/release/windows/haxe/
-            export/release/windows/obj/
+            export/release/linux/haxe/
+            export/release/linux/obj/
           restore-keys: |
-            cache-build-windows
+            cache-build-linux

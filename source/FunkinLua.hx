@@ -1951,7 +1951,8 @@ class FunkinLua {
 							} else if(PlayState.instance.members.indexOf(PlayState.instance.dadGroup) < position) {
 								position = PlayState.instance.members.indexOf(PlayState.instance.dadGroup);
 							}
-							PlayState.instance.insert(position, shit);
+							var index = position==-1?100:position;
+							PlayState.instance.insert(index, shit);
 						}
 					}
 					shit.wasAdded = true;
@@ -2931,7 +2932,12 @@ class FunkinLua {
 			return true;
 		}
 
-		Reflect.setProperty(instance, variable, value);
+		try{
+			Reflect.setProperty(instance, variable, value);
+		}
+		catch(err){
+			trace(err);
+		}
 		return true;
 	}
 	public static function getVarInArray(instance:Dynamic, variable:String):Any
@@ -3275,7 +3281,14 @@ class FunkinLua {
 				return Function_Continue;
 			}
 
-			for (arg in args) Convert.toLua(lua, arg);
+			for (arg in args) {
+				try{
+					Convert.toLua(lua, arg);
+				}
+				catch(err){
+					trace(err+"could not convert ["+arg+"] of type ["+Type.getClass(arg)+"]");
+				}
+			}
 			var status:Int = Lua.pcall(lua, args.length, 1, 0);
 
 			// Checks if it's not successful, then show a error.
@@ -3293,6 +3306,7 @@ class FunkinLua {
 			return result;
 		}
 		catch (e:Dynamic) {
+			trace(Type.getClass(e));
 			trace(e);
 		}
 		#end

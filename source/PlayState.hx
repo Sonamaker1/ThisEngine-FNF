@@ -6,6 +6,7 @@ import Discord.DiscordClient;
 import Section.SwagSection;
 import Song.SwagSong;
 import WiggleEffect.WiggleEffectType;
+import flixel.util.FlxAxes;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -75,7 +76,7 @@ import sys.io.File;
 #end
 
 #if VIDEOS_ALLOWED
-import vlc.MP4Handler;
+import hxcodec.flixel.FlxVideo;
 #end
 
 using StringTools;
@@ -290,6 +291,24 @@ class PlayState extends MusicBeatState
 	public static var lastCombo:FlxSprite;
 	// stores the last combo score objects in an array
 	public static var lastScore:Array<FlxSprite> = [];
+	public function setArrowSkinFromName(songName:String):Void
+	{
+		var noPlayerSkin = SONG.arrowSkin == null || SONG.arrowSkin.length < 1;
+		var noOpponentSkin = SONG.opponentArrowSkin == null || SONG.opponentArrowSkin.length < 1;
+		
+		if(noPlayerSkin || noOpponentSkin){
+			//W: I'll do this later but I'm adding this function for completion
+			/*songName = songName.toLowerCase();
+			switch (songName)
+			{
+				default: 
+					if(noPlayerSkin) PlayState.SONG.arrowSkin = 'note_assets';
+					if(noOpponentSkin) PlayState.SONG.opponentArrowSkin = "note_assets";
+			}
+			*/	
+			//W: TO-DO, Add some hscript callback here lol.
+		}
+	}
 
 	public var scripts:ScriptGroup;
 	override public function create()
@@ -404,28 +423,14 @@ class PlayState extends MusicBeatState
 
 		GameOverSubstate.resetVariables();
 		var songName:String = Paths.formatToSongPath(SONG.song);
+		
+		setArrowSkinFromName(songName.toLowerCase());
 
 		curStage = SONG.stage;
 		//trace('stage is: ' + curStage);
 		if(SONG.stage == null || SONG.stage.length < 1) {
 			switch (songName)
 			{
-				case 'spookeez' | 'south' | 'monster':
-					curStage = 'spooky';
-				case 'pico' | 'blammed' | 'philly' | 'philly-nice':
-					curStage = 'philly';
-				case 'milf' | 'satin-panties' | 'high':
-					curStage = 'limo';
-				case 'cocoa' | 'eggnog':
-					curStage = 'mall';
-				case 'winter-horrorland':
-					curStage = 'mallEvil';
-				case 'senpai' | 'roses':
-					curStage = 'school';
-				case 'thorns':
-					curStage = 'schoolEvil';
-				case 'ugh' | 'guns' | 'stress':
-					curStage = 'tank';
 				default:
 					curStage = 'stage';
 			}
@@ -506,7 +511,7 @@ class PlayState extends MusicBeatState
 					add(stageCurtains);
 				}
 				dadbattleSmokes = new FlxSpriteGroup(); //troll'd
-		}
+			}
 
 		//Game Over Substate stuff here
 		/*switch(Paths.formatToSongPath(SONG.song))
@@ -595,6 +600,7 @@ class PlayState extends MusicBeatState
 			/*switch (curStage)
 			{
 				default:
+					
 					gfVersion = 'gf';
 			}
 
@@ -1210,13 +1216,14 @@ class PlayState extends MusicBeatState
 			return;
 		}
 
-		var video:MP4Handler = new MP4Handler();
-		video.playVideo(filepath);
-		video.finishCallback = function()
+		var video:FlxVideo = new FlxVideo();
+		video.play(filepath);
+		video.onEndReached.add(function()
 		{
+			video.dispose();
 			startAndEnd();
 			return;
-		}
+		}, true);
 		#else
 		FlxG.log.warn('Platform not supported!');
 		startAndEnd();
@@ -2116,7 +2123,7 @@ class PlayState extends MusicBeatState
 		// Limits the number of lua updates to 60/second, which fixes some crashes if FPS > 120
 		// on long songs with multiple scripts that use onUpdate() function
 
-		if(ClientPrefs.framerate <= maxLuaFPS){
+		/*if(ClientPrefs.framerate <= maxLuaFPS){
 			
 			callOnLuas('onUpdate', [elapsed]);
 		}
@@ -2128,10 +2135,11 @@ class PlayState extends MusicBeatState
 				callOnLuas('onUpdate', [fpsElapsed[0]]);
 				fpsElapsed[0]=0;
 				numCalls[0]=0;
-
 			}
-		}
-
+		}*/
+		// time to live a little, hopefully the crash is fixed though
+		callOnLuas('onUpdate', [elapsed]); 
+		
 		//W: TODO update codes based on the current stage
 		if(!inCutscene) {
 			var lerpVal:Float = CoolUtil.boundTo(elapsed * 2.4 * cameraSpeed * playbackRate, 0, 1);
@@ -2448,6 +2456,7 @@ class PlayState extends MusicBeatState
 		setOnLuas('botPlay', cpuControlled);
 		
 		//Fix for high fps lua crashes
+		/*
 		if(ClientPrefs.framerate <= maxLuaFPS){
 			callOnLuas('onUpdatePost', [elapsed]);
 		}
@@ -2460,7 +2469,9 @@ class PlayState extends MusicBeatState
 				fpsElapsed[1]=0;
 				numCalls[1]=0;
 			}
-		}
+		}*/
+
+		callOnLuas('onUpdatePost', [elapsed]);
 	}
 
 	override function draw(){
@@ -3885,7 +3896,7 @@ class PlayState extends MusicBeatState
 	{
 		super.stepHit();
 		if (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > (20 * playbackRate)
-			|| (SONG.needsVoices && Math.abs(vocals.time - (Conductor.songPosition - Conductor.offset)) > (20 * playbackRate)))
+			|| (!vocalsFinished && SONG.needsVoices && Math.abs(vocals.time - (Conductor.songPosition - Conductor.offset)) > (20 * playbackRate)))
 		{
 			resyncVocals();
 		}
@@ -4077,6 +4088,16 @@ class PlayState extends MusicBeatState
 		setOnLuas('ratingName', ratingName);
 		setOnLuas('ratingFC', ratingFC);
 	}
+	public function bypass_closeSubState(){super.closeSubState();}
+	public function bypass_create(){super.create();}
+	public function bypass_destroy(){super.destroy();}
+	public function bypass_onFocus(){super.onFocus();}
+	public function bypass_onFocusLost(){super.onFocusLost();}
+	public function bypass_openSubState(SubState:FlxSubState){super.openSubState(SubState);}
+	public function bypass_stepHit(){super.stepHit();}
+	public function bypass_beatHit(){super.beatHit();}
+	public function bypass_update(elapsed:Float){super.update(elapsed);}
+
 
 	function initScripts()
 	{
