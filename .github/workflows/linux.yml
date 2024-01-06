@@ -30,7 +30,8 @@ jobs:
           sudo apt-get install libvlc-dev libvlccore-dev
       - name: Installing/Updating libraries
         run: |
-          haxelib setup C:/haxelib 
+          mkdir ~/haxelib
+          haxelib setup ~/haxelib 
           haxelib git hxcpp https://github.com/Sonamaker1/hxcpp --always > nul 
           haxelib --always set lime 8.0.2 > nul 
           haxelib --never install flixel 4.11.0 > nul 
