@@ -6,7 +6,7 @@ jobs:
   build:
     name: Mac OS Build
     permissions: write-all
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
       - name: Pulling the new commit
         uses: actions/checkout@v2
