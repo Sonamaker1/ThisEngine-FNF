@@ -62,7 +62,8 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Update-Mac
-          path: export/release/macos/bin/PsychEngine
+          path:  |
+            export/release/macos/bin/PsychEngine.app/Contents/MacOS/          
       - name: Clearing already existing cache
         uses: actions/github-script@v6
         with:
