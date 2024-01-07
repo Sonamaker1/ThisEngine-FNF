@@ -48,6 +48,7 @@
 	<define name="LUA_ALLOWED" if="desktop" />
 	<define name="ACHIEVEMENTS_ALLOWED" />
 	<define name="VIDEOS_ALLOWED" if="web || windows || linux || mac" unless="32bits"/>
+    <define name="VIDEOS_NOT_MAC" if="web || windows || linux" unless="32bits"/>
     <define name="PSYCH_WATERMARKS"/> <!-- DELETE THIS TO REMOVE WATERMARKS/DEV NAMES ON TITLE SCREEN -->
 	<define name="TITLE_SCREEN_EASTER_EGG" if="officialBuild"/> <!-- DELETE THE if="officialBuild" for enabling this on an unofficial build -->
 	<define name="CRASH_HANDLER" if="desktop release" />
@@ -111,7 +112,8 @@
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
 	<haxelib name="linc_luajit" if="LUA_ALLOWED"/>
-	<haxelib name="hxCodec" version="3.0.2" if="VIDEOS_ALLOWED"/>
+	<haxelib name="hxCodec" version="3.0.2" if="VIDEOS_NOT_MAC"/>
+	<haxelib name="hxCodec" if="mac" unless="32bits"/> <!-- I don't know if this will even work? -->
 	
 <haxelib name="faxe" if='switch'/>
 	<!--<haxelib name="polymod"/> -->
