@@ -1,6 +1,12 @@
+--Omg I am so sorry I legit didn't mean to add this to the source code but it's sorta in every build now so forgive me
+--Go check out the author's gamebanana link!:
+--https://gamebanana.com/tools/11157
+
 --By UpDown LeftRight
 
 --Remaster by Kriptel Pro
+
+--Edited by Whatify for ThisEngine as an example lua state to use NewStateAddons.hx with (then accidentally pushed to github)
 
 --												<-- UPDATE 1 -->
 --Additions:
