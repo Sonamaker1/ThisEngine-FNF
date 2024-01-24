@@ -173,7 +173,7 @@ class Alphabet extends FlxSpriteGroup
 			if(letter != null)
 			{
 				letter.updateHitbox();
-				letter.updateLetterOffset();
+				//letter.updateLetterOffset();
 				var ratio:Float = (value / letter.spawnScale.y);
 				letter.y = letter.spawnPos.y * ratio;
 			}
