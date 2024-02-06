@@ -55,9 +55,9 @@ class ClientPrefs {
 
 	@:isVar public var comboOffset(get, set):Array<Int>;// = [0, 0, 0, 0];
 	@:isVar public var ratingOffset(get, set):Int;// = 0;
-	@:isVar public var sickWindow(get, set):Int;// = 45;
-	@:isVar public var goodWindow(get, set):Int;// = 90;
-	@:isVar public var badWindow(get, set):Int;// = 135;
+	@:isVar public var sickWindow(get, set):Float;// = 45;
+	@:isVar public var goodWindow(get, set):Float;// = 90;
+	@:isVar public var badWindow(get, set):Float;// = 135;
 	@:isVar public var safeFrames(get, set):Float;// = 10;
 	@:isVar public var discordRPC(get, set):Bool;// = true;
 
@@ -128,15 +128,15 @@ class ClientPrefs {
 	function set_comboStacking(input:Bool) { OG_ClientPrefs.comboStacking = input; return OG_ClientPrefs.comboStacking;}
 	function get_comboOffset() { return OG_ClientPrefs.comboOffset;}
 	function set_comboOffset(input:Array<Int>) { OG_ClientPrefs.comboOffset = input; return OG_ClientPrefs.comboOffset;}
-	function get_ratingOffset() { return OG_ClientPrefs.ratingOffset;}
-	function set_ratingOffset(input:Int) { OG_ClientPrefs.ratingOffset = input; return OG_ClientPrefs.ratingOffset;}
-	function get_sickWindow() { return OG_ClientPrefs.sickWindow;}
-	function set_sickWindow(input:Int) { OG_ClientPrefs.sickWindow = input; return OG_ClientPrefs.sickWindow;}
-	function get_goodWindow() { return OG_ClientPrefs.goodWindow;}
-	function set_goodWindow(input:Int) { OG_ClientPrefs.goodWindow = input; return OG_ClientPrefs.goodWindow;}
-	function get_badWindow() { return OG_ClientPrefs.badWindow;}
-	function set_badWindow(input:Int) { OG_ClientPrefs.badWindow = input; return OG_ClientPrefs.badWindow;}
-	function get_safeFrames() { return OG_ClientPrefs.safeFrames;}
+	function get_ratingOffset():Int { return Std.int(OG_ClientPrefs.ratingOffset);}
+	function set_ratingOffset(input:Int) { OG_ClientPrefs.ratingOffset = Std.int(input); return Std.int(OG_ClientPrefs.ratingOffset);}
+	function get_sickWindow():Float { return OG_ClientPrefs.sickWindow;}
+	function set_sickWindow(input:Float) { OG_ClientPrefs.sickWindow = input; return OG_ClientPrefs.sickWindow;}
+	function get_goodWindow():Float { return OG_ClientPrefs.goodWindow;}
+	function set_goodWindow(input:Float) { OG_ClientPrefs.goodWindow = input; return OG_ClientPrefs.goodWindow;}
+	function get_badWindow():Float { return OG_ClientPrefs.badWindow;}
+	function set_badWindow(input:Float) { OG_ClientPrefs.badWindow = input; return OG_ClientPrefs.badWindow;}
+	function get_safeFrames():Float { return OG_ClientPrefs.safeFrames;}
 	function set_safeFrames(input:Float) { OG_ClientPrefs.safeFrames = input; return OG_ClientPrefs.safeFrames;}
 
 

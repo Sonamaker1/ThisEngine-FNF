@@ -42,6 +42,9 @@ import sys.FileSystem;
 import sys.io.File;
 #end
 
+import flixel.text.FlxBitmapText;
+import flixel.graphics.frames.FlxBitmapFont;
+
 class ScriptUtil
 {
 	public static final extns:Array<String> = ["hx", "hscript", "hsc", "hxs"];
@@ -137,6 +140,11 @@ class ScriptUtil
 
 		// Sounds
 		script.set("FlxSound", FlxSound);
+		
+		// Bitmap Fonts
+		script.set('FlxBitmapText',FlxBitmapText );
+		script.set('FlxBitmapFont',FlxBitmapFont );
+		script.set('fromAngelCode',FlxBitmapFont.fromAngelCode);
 	}
 
 	public static function setUpFNFScript(script:Script)
