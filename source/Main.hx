@@ -3,6 +3,8 @@ package;
 import backend.ClientPrefs;
 import substates.PauseSubState;
 import substates.GameOverSubstate;
+import flixel.text.FlxBitmapText;
+import flixel.graphics.frames.FlxBitmapFont;
 
 import flixel.graphics.FlxGraphic;
 import flixel.FlxG;
@@ -40,6 +42,7 @@ class Main extends Sprite
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 	public static var fpsVar:FPS;
 	public static var musicPath:String = '';
+	public static var globalFlags:Array<String> = [];
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
 	public static function main():Void
@@ -86,7 +89,7 @@ class Main extends Sprite
 		}
 	
 		ClientPrefs.loadDefaultKeys();
-		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
+		addChild(new FlxGame(gameWidth, gameHeight, initialState, #if (flixel < "5.0.0") zoom, #end framerate, framerate, skipSplash, startFullscreen));
 
 		#if !mobile
 		fpsVar = new FPS(10, 3, 0xFFFFFF);

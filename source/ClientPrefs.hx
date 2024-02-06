@@ -55,10 +55,10 @@ class ClientPrefs {
 	];
 
 	public static var comboOffset:Array<Int> = [0, 0, 0, 0];
-	public static var ratingOffset:Int = 0;
-	public static var sickWindow:Int = 45;
-	public static var goodWindow:Int = 90;
-	public static var badWindow:Int = 135;
+	public static var ratingOffset:Float = 0;
+	public static var sickWindow:Float = 45;
+	public static var goodWindow:Float = 90;
+	public static var badWindow:Float = 135;
 	public static var safeFrames:Float = 10;
 
 	//Every key has two binds, add your key bind down here and then add your control on options/ControlsSubState.hx and Controls.hx

@@ -7,8 +7,10 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.util.FlxTimer;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flash.media.Sound;
+import haxe.iterators.ArrayIterator;
+import StringBuf;
 
 using StringTools;
 
@@ -19,6 +21,153 @@ enum Alignment
 	RIGHT;
 }
 
+class ColorEvent
+{
+	public var input:String ="";
+	public var colorToUse:FlxColor = 0xFFFFFF;
+	//public static var PATTERN:EReg = ~/<([^|]+)([|])([^|]+)>/;  
+	//public static var PATTERN_GLOBAL:EReg = ~/<([^|]+)([|])([^|]+)>/g;  
+	
+	/*
+	public static function getMatches(ereg:EReg, input:String):Array<Array<String>> {
+		var matches = [];
+		try{
+			while (ereg.match(input)) {
+				matches.push([ereg.matched(1),ereg.matched(3)]); 
+				input = ereg.matchedRight();
+				//trace(input);
+			}
+		}
+		catch(err){}
+		trace(matches);
+		return matches;
+	}
+	
+	
+	public static function isescape(str:String){
+		var length = 0;
+		try{
+			var arr = getMatches(ColorEvent.PATTERN, str);
+			//trace(arr);
+			if (arr.length>0) { 
+				length = 1;
+			}
+		}
+		catch(err){}
+		return length > 0;
+	}
+	*/
+	
+	public static function resolveColor(str:String):FlxColor{
+		switch(str){
+			case "red": return 0xFF0000;
+			case "green": return 0x00FF00;
+			case "blue": return 0x0000FF;
+			default: 
+				var color:Int = Std.parseInt(str);
+				if(!str.startsWith('0x')) color = Std.parseInt('0xff' + str);
+				return color;
+		}
+	}
+	
+	public function new(arr:Array<Dynamic>){
+		try{
+			colorToUse = resolveColor(arr[0]); 
+			input = arr[1];
+		}
+		catch(err){}
+		
+		trace(colorToUse);
+	}
+	
+	function toString(){
+		return input;
+	}
+	
+}
+
+
+class Ansi /*extends CustomText*/ {
+    //static var PATTERN:EReg = ~/<([^|]+)([|])([^|]+)>/;  // ~/(\\x1b\[[\d;]*[a-zA-Z])/;
+    //static var PATTERN_LEFT:EReg = ~/<([^|]+)|[^|]+>/;  // ~/(\\x1b\[[\d;]*[a-zA-Z])/;
+    //static var PATTERN_RIGHT:EReg = ~/<[^|]+|([^|]+)>/;  // ~/(\\x1b\[[\d;]*[a-zA-Z])/;
+     // ~/(\\x1b\[[\d;]*[a-zA-Z])/;
+
+    public static function escapes(str:String):haxe.iterators.ArrayIterator<Dynamic> {
+        //var ereg:EReg = PATTERN;
+        
+        var results:Array<Dynamic> = [];// ColorEvent.PATTERN_GLOBAL.split(str);
+        var s = str; 
+		var s2 = new StringBuf();
+		 
+		var x =0;
+		var substrs = [];
+		var subindexes = [];
+		
+		//Fuck regex I'll do it myself
+		while(x<s.length){
+			var inp = [];
+			var colorName = new StringBuf();
+			var inputName = new StringBuf();
+			for (i in x...s.length){
+				var charI = s.charAt(i);
+				if(charI=="<"){
+					results.push(s2.toString());
+					s2 = new StringBuf();
+					inp[0] = i;
+					x++;
+					continue;
+				}
+				if(charI=="|"){
+					inp[1] = i;
+					x++;
+					continue;
+				}
+				if(charI==">"){
+					inp[2] = i;
+				}
+				
+				switch(inp.length){
+					case 0:s2.add(charI); 
+					case 1:colorName.add(charI);
+					case 2:inputName.add(charI);
+					case 3:results.push(new ColorEvent([colorName.toString(),inputName.toString()]));
+						colorName = new StringBuf();
+						inputName = new StringBuf();
+						subindexes.push(inp); 
+						inp = []; s2 = new StringBuf();
+				}
+				x++;
+			}
+		}
+		results.push(s2.toString());
+		
+		//var emptySpot = 0;
+		
+		
+        /*for (match in ColorEvent.getMatches(ColorEvent.PATTERN,str)) {
+            if (match.length == 0) continue;
+            trace(match);
+            while (results[emptySpot]!='' && emptySpot < results.length){
+				emptySpot++;
+			}
+			
+			if(emptySpot >= results.length){
+				results.push(new ColorEvent([match[0],match[1]]));
+            }
+            else{
+				results[emptySpot] = new ColorEvent([match[0],match[1]]);
+			}
+        }
+        */
+        if(results.length==0)
+			results.push(s);
+		
+		
+        return new ArrayIterator(results);
+    }
+
+}
 class Alphabet extends FlxSpriteGroup
 {
 	public var text(default, set):String;
@@ -173,7 +322,7 @@ class Alphabet extends FlxSpriteGroup
 			if(letter != null)
 			{
 				letter.updateHitbox();
-				letter.updateLetterOffset();
+				//letter.updateLetterOffset();
 				var ratio:Float = (value / letter.spawnScale.y);
 				letter.y = letter.spawnPos.y * ratio;
 			}
@@ -217,6 +366,7 @@ class Alphabet extends FlxSpriteGroup
 
 	private static var Y_PER_ROW:Float = 85;
 
+	
 	private function createLetters(newText:String)
 	{
 		var consecutiveSpaces:Int = 0;
@@ -224,49 +374,69 @@ class Alphabet extends FlxSpriteGroup
 		var xPos:Float = 0;
 		var rowData:Array<Float> = [];
 		rows = 0;
-		for (character in newText.split(''))
-		{
+		
+		//fix for options menu (uses > and <)
+		var phrases:haxe.iterators.ArrayIterator<Dynamic> = newText.length<2?new ArrayIterator([newText]):Ansi.escapes(newText);
+		
+		for (phrase in phrases){
+			var textToAdd:String = phrase.toString();
+			var colorToUse = 0xFFFFFF;
 			
-			if(character != '\n')
-			{
-				var spaceChar:Bool = (character == " " || (bold && character == "_"));
-				if (spaceChar) consecutiveSpaces++;
-
-				var isAlphabet:Bool = AlphaCharacter.isTypeAlphabet(character.toLowerCase());
-				if (AlphaCharacter.allLetters.exists(character.toLowerCase()) && (!bold || !spaceChar))
-				{
-					if (consecutiveSpaces > 0)
-					{
-						xPos += 28 * consecutiveSpaces * scaleX;
-						if(!bold && xPos >= FlxG.width * 0.65)
-						{
-							xPos = 0;
-							rows++;
-						}
-					}
-					consecutiveSpaces = 0;
-
-					var letter:AlphaCharacter = new AlphaCharacter(xPos, rows * Y_PER_ROW * scaleY, character, bold, this);
-					letter.x += letter.letterOffset[0] * scaleX;
-					letter.y -= letter.letterOffset[1] * scaleY;
-					letter.row = rows;
-
-					var off:Float = 0;
-					if(!bold) off = 2;
-					xPos += letter.width + (letter.letterOffset[0] + off) * scaleX;
-					rowData[rows] = xPos;
-
-					add(letter);
-					letters.push(letter);
-				}
+			if (!Std.is(phrase, String)){
+				colorToUse = phrase.colorToUse;
+				textToAdd = phrase.input;
 			}
-			else
+			
+			for (character in textToAdd.split(''))
 			{
-				xPos = 0;
-				rows++;
+				if(character != '\n')
+				{
+					var spaceChar:Bool = (character == " " || (bold && character == "_"));
+					if (spaceChar) consecutiveSpaces++;
+
+					var isAlphabet:Bool = AlphaCharacter.isTypeAlphabet(character.toLowerCase());
+					if (AlphaCharacter.allLetters.exists(character.toLowerCase()) && (!bold || !spaceChar))
+					{
+						if (consecutiveSpaces > 0)
+						{
+							xPos += 28 * consecutiveSpaces * scaleX;
+							if(!bold && xPos >= FlxG.width * 0.65)
+							{
+								xPos = 0;
+								rows++;
+							}
+						}
+						consecutiveSpaces = 0;
+
+						var letter:AlphaCharacter = new AlphaCharacter(xPos, rows * Y_PER_ROW * scaleY, character, bold, this);
+						letter.x += letter.letterOffset[0] * scaleX;
+						letter.y -= letter.letterOffset[1] * scaleY;
+						letter.row = rows;
+
+						var off:Float = 0;
+						if(!bold) off = 2;
+						xPos += letter.width + (letter.letterOffset[0] + off) * scaleX;
+						rowData[rows] = xPos;
+						
+						if(colorToUse!=0xFFFFFF){
+							var tColor = new FlxColor(colorToUse);
+							letter.colorTransform.redOffset = tColor.red;
+							letter.colorTransform.greenOffset = tColor.green;
+							letter.colorTransform.blueOffset = tColor.blue;
+						}
+						add(letter);
+						letters.push(letter);
+					}
+				}
+				else
+				{
+					xPos = 0;
+					rows++;
+				}
 			}
 		}
 
+		
 		for (letter in letters)
 		{
 			letter.spawnPos.set(letter.x, letter.y);
