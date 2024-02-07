@@ -73,13 +73,7 @@ class TitleState extends MusicBeatState
 
 	var wackyImage:FlxSprite;
 
-	#if TITLE_SCREEN_EASTER_EGG
-	var easterEggKeys:Array<String> = [
-		'SHADOW', 'RIVER', 'SHUBS', 'BBPANZU'
-	];
-	var allowedKeys:String = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	var easterEggKeysBuffer:String = '';
-	#end
+	
 
 	var mustUpdate:Bool = false;
 
@@ -162,25 +156,6 @@ class TitleState extends MusicBeatState
 
 		// IGNORE THIS!!!
 		titleJSON = Json.parse(Paths.getTextFromFile('images/gfDanceTitle.json'));
-
-		#if TITLE_SCREEN_EASTER_EGG
-		if (FlxG.save.data.psychDevsEasterEgg == null) FlxG.save.data.psychDevsEasterEgg = ''; //Crash prevention
-		switch(FlxG.save.data.psychDevsEasterEgg.toUpperCase())
-		{
-			case 'SHADOW':
-				titleJSON.gfx += 210;
-				titleJSON.gfy += 40;
-			case 'RIVER':
-				titleJSON.gfx += 100;
-				titleJSON.gfy += 20;
-			case 'SHUBS':
-				titleJSON.gfx += 160;
-				titleJSON.gfy -= 10;
-			case 'BBPANZU':
-				titleJSON.gfx += 45;
-				titleJSON.gfy += 100;
-		}
-		#end
 
 		if(!initialized)
 		{
@@ -555,13 +530,13 @@ class TitleState extends MusicBeatState
 		
 	}
 
-	function createCoolText(textArray:Array<String>, ?offset:Float = 0)
+	function createCoolText(textArray:Array<String>, ?offset:Float = -20)
 	{
 		for (i in 0...textArray.length)
 		{
 			var money:Alphabet = new Alphabet(0, 0, textArray[i], true);
 			money.screenCenter(X);
-			money.y += (i * 60) + 200 + offset;
+			money.y += (i * Alphabet.Y_PER_ROW_BOLD) + 200 + Alphabet.boldLetterAdditions[1] + offset-20;
 			if(credGroup != null && textGroup != null) {
 				credGroup.add(money);
 				textGroup.add(money);
@@ -569,12 +544,12 @@ class TitleState extends MusicBeatState
 		}
 	}
 
-	function addMoreText(text:String, ?offset:Float = 0)
+	function addMoreText(text:String, ?offset:Float = -20)
 	{
 		if(textGroup != null && credGroup != null) {
 			var coolText:Alphabet = new Alphabet(0, 0, text, true);
 			coolText.screenCenter(X);
-			coolText.y += (textGroup.length * 60) + 200 + offset;
+			coolText.y += (textGroup.length * Alphabet.Y_PER_ROW_BOLD) + 200 + Alphabet.boldLetterAdditions[1] + offset -20;
 			credGroup.add(coolText);
 			textGroup.add(coolText);
 		}
@@ -624,8 +599,7 @@ class TitleState extends MusicBeatState
 				case 4:
 					#if PSYCH_WATERMARKS
 					addMoreText('Shadow Mario', 15);
-					addMoreText('RiverOaken', 15);
-					addMoreText('shubs', 15);
+					addMoreText('Riveren', 15);
 					#else
 					addMoreText('present');
 					#end
@@ -694,16 +668,7 @@ class TitleState extends MusicBeatState
 				var sound:FlxSound = null;
 				switch(easteregg)
 				{
-					case 'RIVER':
-						sound = FlxG.sound.play(Paths.sound('JingleRiver'));
-					case 'SHUBS':
-						sound = FlxG.sound.play(Paths.sound('JingleShubs'));
-					case 'SHADOW':
-						FlxG.sound.play(Paths.sound('JingleShadow'));
-					case 'BBPANZU':
-						sound = FlxG.sound.play(Paths.sound('JingleBB'));
-
-					default: //Go back to normal ugly ass boring GF
+					default: 
 						remove(ngSpr);
 						remove(credGroup);
 						FlxG.camera.flash(FlxColor.WHITE, 2);
@@ -716,27 +681,14 @@ class TitleState extends MusicBeatState
 				}
 
 				transitioning = true;
-				if(easteregg == 'SHADOW')
-				{
-					new FlxTimer().start(3.2, function(tmr:FlxTimer)
-					{
-						remove(ngSpr);
-						remove(credGroup);
-						FlxG.camera.flash(FlxColor.WHITE, 0.6);
-						transitioning = false;
-					});
-				}
-				else
-				{
-					remove(ngSpr);
-					remove(credGroup);
-					FlxG.camera.flash(FlxColor.WHITE, 3);
-					sound.onComplete = function() {
-						FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
-						FlxG.sound.music.fadeIn(4, 0, 0.7);
-						transitioning = false;
-					};
-				}
+				remove(ngSpr);
+				remove(credGroup);
+				FlxG.camera.flash(FlxColor.WHITE, 3);
+				sound.onComplete = function() {
+					FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+					FlxG.sound.music.fadeIn(4, 0, 0.7);
+					transitioning = false;
+				};
 				playJingle = false;
 			}
 			else //Default! Edit this one!!
@@ -748,16 +700,6 @@ class TitleState extends MusicBeatState
 				var easteregg:String = FlxG.save.data.psychDevsEasterEgg;
 				if (easteregg == null) easteregg = '';
 				easteregg = easteregg.toUpperCase();
-				#if TITLE_SCREEN_EASTER_EGG
-				if(easteregg == 'SHADOW')
-				{
-					FlxG.sound.music.fadeOut();
-					if(FreeplayState.vocals != null)
-					{
-						FreeplayState.vocals.fadeOut();
-					}
-				}
-				#end
 			}
 			skippedIntro = true;
 		}

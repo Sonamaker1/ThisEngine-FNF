@@ -1,4 +1,6 @@
 {
   "DiscordClient": [["clientID", "863222024192262205"]],
-  "MainMenuState": [["psychEngineVersion", "0.6.3+"]]
+  "MainMenuState": [["psychEngineVersion", "0.6.3 vTEng"]],
+  "Alphabet": [["Y_PER_ROW_BOLD", "85"],["boldLetterAdditions", [0,0] ]],
+  "CoolUtil": [["defaultDifficulties", ["Easy", "Normal", "Hard"] ]]
 }

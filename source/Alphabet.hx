@@ -168,6 +168,8 @@ class Ansi /*extends CustomText*/ {
     }
 
 }
+
+
 class Alphabet extends FlxSpriteGroup
 {
 	public var text(default, set):String;
@@ -192,7 +194,7 @@ class Alphabet extends FlxSpriteGroup
 	public var scaleX(default, set):Float = 1;
 	public var scaleY(default, set):Float = 1;
 	public var rows:Int = 0;
-
+	
 	public var distancePerItem:FlxPoint = new FlxPoint(20, 120);
 	public var startPosition:FlxPoint = new FlxPoint(0, 0); //for the calculations
 
@@ -331,6 +333,11 @@ class Alphabet extends FlxSpriteGroup
 		return value;
 	}
 
+	public static var Y_PER_ROW:Float = 85;
+	public static var Y_PER_ROW_BOLD:Float = 85;
+	public static var boldLetterAdditions:Array<Float> = [0,0];
+	public static var letterAdditions:Array<Float> = [0,0];
+	
 	override function update(elapsed:Float)
 	{
 		if (isMenuItem)
@@ -342,9 +349,9 @@ class Alphabet extends FlxSpriteGroup
 			else if(targetX !=Math.NEGATIVE_INFINITY)
 				x = FlxMath.lerp(x, targetX, lerpVal);
 			else if(changeX)
-				x = FlxMath.lerp(x, (targetY * distancePerItem.x) + startPosition.x, lerpVal);
+				x = FlxMath.lerp(x, (targetY * distancePerItem.x) + startPosition.x - (bold?boldLetterAdditions[0]:letterAdditions[0]), lerpVal);
 			if(changeY)
-				y = FlxMath.lerp(y, (targetY * 1.3 * distancePerItem.y) + startPosition.y, lerpVal);
+				y = FlxMath.lerp(y, (targetY * 1.3 * distancePerItem.y) + startPosition.y - (bold?boldLetterAdditions[1]:letterAdditions[1]), lerpVal);
 		}
 		super.update(elapsed);
 	}
@@ -358,13 +365,11 @@ class Alphabet extends FlxSpriteGroup
 			else if(targetX !=Math.NEGATIVE_INFINITY)
 				x = targetX;
 			else if(changeX)
-				x = (targetY * distancePerItem.x) + startPosition.x;
+				x = (targetY * distancePerItem.x) + startPosition.x - (bold?boldLetterAdditions[0]:letterAdditions[0]);
 			if(changeY)
-				y = (targetY * 1.3 * distancePerItem.y) + startPosition.y;
+				y = (targetY * 1.3 * distancePerItem.y) + startPosition.y - (bold?boldLetterAdditions[1]:letterAdditions[1]);
 		}
 	}
-
-	private static var Y_PER_ROW:Float = 85;
 
 	
 	private function createLetters(newText:String)
@@ -407,15 +412,16 @@ class Alphabet extends FlxSpriteGroup
 							}
 						}
 						consecutiveSpaces = 0;
-
-						var letter:AlphaCharacter = new AlphaCharacter(xPos, rows * Y_PER_ROW * scaleY, character, bold, this);
+						var yOffset = bold?boldLetterAdditions[1]:letterAdditions[1];
+						var letter:AlphaCharacter = new AlphaCharacter(xPos, rows * (bold?Y_PER_ROW_BOLD:Y_PER_ROW) * scaleY + yOffset, character, bold, this);
 						letter.x += letter.letterOffset[0] * scaleX;
 						letter.y -= letter.letterOffset[1] * scaleY;
 						letter.row = rows;
 
 						var off:Float = 0;
+						var xOffset = bold?boldLetterAdditions[0]:letterAdditions[0];
 						if(!bold) off = 2;
-						xPos += letter.width + (letter.letterOffset[0] + off) * scaleX;
+						xPos += letter.width + (letter.letterOffset[0] + off + xOffset) * scaleX;
 						rowData[rows] = xPos;
 						
 						if(colorToUse!=0xFFFFFF){
