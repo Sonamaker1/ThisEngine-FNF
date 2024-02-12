@@ -31,7 +31,7 @@ jobs:
           haxelib setup ~/haxelib 
           haxelib git hxcpp https://github.com/Sonamaker1/hxcpp --always > nul 
           haxelib --always set lime 8.0.2 > nul 
-          haxelib --never install flixel 5.6.0 > nul 
+          haxelib --never install flixel 5.5.0 > nul 
           haxelib run lime setup flixel > nul 
           haxelib run lime setup > nul 
           haxelib --always set openfl 9.3.2 > nul 
