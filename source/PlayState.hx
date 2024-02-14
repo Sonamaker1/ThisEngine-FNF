@@ -1611,14 +1611,20 @@ class PlayState extends MusicBeatState
 	var lastReportedPlayheadPosition:Int = 0;
 	var songTime:Float = 0;
 
+	var no_inst_found = false;
 	function startSong():Void
 	{
 		startingSong = false;
 
 		previousFrameTime = FlxG.game.ticks;
 		lastReportedPlayheadPosition = 0;
-
-		FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+		
+		var instSnd = Paths.inst(PlayState.SONG.song);
+		if(instSnd == null){
+			instSnd = Paths.returnSound("nocrash", "Inst");
+			no_inst_found = true;
+		}
+		FlxG.sound.playMusic(instSnd, 1, false);
 		FlxG.sound.music.pitch = playbackRate;
 		FlxG.sound.music.onComplete = finishSong.bind();
 		vocals.play();
@@ -2265,7 +2271,7 @@ class PlayState extends MusicBeatState
 					if(secondsTotal < 0) secondsTotal = 0;
 
 					if(ClientPrefs.timeBarType != 'Song Name')
-						timeTxt.text = FlxStringUtil.formatTime(secondsTotal, false);
+						timeTxt.text = FlxStringUtil.formatTime(secondsTotal, false) + (no_inst_found?"\n[No Inst]":"");
 				}
 			}
 
