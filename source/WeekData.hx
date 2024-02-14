@@ -161,22 +161,28 @@ class WeekData {
 			var directory:String = directories[i] + 'weeks/';
 			if(FileSystem.exists(directory)) {
 				var listOfWeeks:Array<String> = CoolUtil.coolTextFile(directory + 'weekList.txt');
-				for (daWeek in listOfWeeks)
-				{
-					var path:String = directory + daWeek + '.json';
-					if(sys.FileSystem.exists(path))
+				try{
+					for (daWeek in listOfWeeks)
 					{
-						addWeek(daWeek, path, directories[i], i, originalLength);
+						var path:String = directory + daWeek + '.json';
+						if(sys.FileSystem.exists(path))
+						{
+							addWeek(daWeek, path, directories[i], i, originalLength);
+						}
+					}
+
+					for (file in FileSystem.readDirectory(directory))
+					{
+						var path = haxe.io.Path.join([directory, file]);
+						if (!sys.FileSystem.isDirectory(path) && file.endsWith('.json'))
+						{
+							addWeek(file.substr(0, file.length - 5), path, directories[i], i, originalLength);
+						}
 					}
 				}
-
-				for (file in FileSystem.readDirectory(directory))
-				{
-					var path = haxe.io.Path.join([directory, file]);
-					if (!sys.FileSystem.isDirectory(path) && file.endsWith('.json'))
-					{
-						addWeek(file.substr(0, file.length - 5), path, directories[i], i, originalLength);
-					}
+				catch(err){
+					trace("[DirErr] Error at directory:["+directory+"]"); 
+					trace("[DirErr] "+err);
 				}
 			}
 		}

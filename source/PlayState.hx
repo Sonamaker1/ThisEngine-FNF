@@ -561,13 +561,19 @@ class PlayState extends MusicBeatState
 		{
 			if(FileSystem.exists(folder))
 			{
-				for (file in FileSystem.readDirectory(folder))
-				{
-					if(file.endsWith('.lua') && !filesPushed.contains(file))
+				try{
+					for (file in FileSystem.readDirectory(folder))
 					{
-						luaArray.push(new FunkinLua(folder + file));
-						filesPushed.push(file);
+						if(file.endsWith('.lua') && !filesPushed.contains(file))
+						{
+							luaArray.push(new FunkinLua(folder + file));
+							filesPushed.push(file);
+						}
 					}
+				}
+				catch(err){
+					trace("[DirErr] Error at directory:["+folder+"]"); 
+					trace("[DirErr] "+err);
 				}
 			}
 		}
@@ -908,13 +914,19 @@ class PlayState extends MusicBeatState
 		{
 			if(FileSystem.exists(folder))
 			{
-				for (file in FileSystem.readDirectory(folder))
-				{
-					if(file.endsWith('.lua') && !filesPushed.contains(file))
+				try{
+					for (file in FileSystem.readDirectory(folder))
 					{
-						luaArray.push(new FunkinLua(folder + file));
-						filesPushed.push(file);
+						if(file.endsWith('.lua') && !filesPushed.contains(file))
+						{
+							luaArray.push(new FunkinLua(folder + file));
+							filesPushed.push(file);
+						}
 					}
+				}
+				catch(err){
+					trace("[DirErr] Error at directory:["+folder+"]"); 
+					trace("[DirErr] "+err);
 				}
 			}
 		}

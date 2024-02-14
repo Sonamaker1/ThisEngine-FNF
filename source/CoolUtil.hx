@@ -54,7 +54,7 @@ class CoolUtil
 
 	public static function difficultyString():String
 	{
-		return difficulties[PlayState.storyDifficulty].toUpperCase();
+		return difficulties[PlayState.storyDifficulty];
 	}
 
 	inline public static function boundTo(value:Float, min:Float, max:Float):Float
@@ -178,32 +178,54 @@ class CoolUtil
 
 		if (FileSystem.exists(path))
 		{
-			for (file in FileSystem.readDirectory(path))
-			{
-				var path = haxe.io.Path.join([path, file]);
-				if (!FileSystem.isDirectory(path))
+			try{
+				for (file in FileSystem.readDirectory(path))
 				{
-					for (extn in extns)
+					var path = haxe.io.Path.join([path, file]);
+					if (!FileSystem.isDirectory(path))
 					{
-						if (file.endsWith(extn))
+						for (extn in extns)
 						{
-							if (filePath)
-								files.push(path);
-							else
-								files.push(file);
+							if (file.endsWith(extn))
+							{
+								if (filePath)
+									files.push(path);
+								else
+									files.push(file);
+							}
 						}
 					}
-				}
-				else if (deepSearch) // ! YAY !!!! -lunar
-				{
-					var pathsFiles:Array<String> = findFilesInPath(path, extns);
+					else if (deepSearch) // ! YAY !!!! -lunar
+					{
+						var pathsFiles:Array<String> = findFilesInPath(path, extns);
 
-					for (_ in pathsFiles)
-						files.push(_);
+						for (_ in pathsFiles)
+							files.push(_);
+					}
 				}
+			}catch(err){
+				trace("[DirErr] Error at directory:["+path+"]"); 
+				trace("[DirErr] "+err);
 			}
 		}
 		return files;
+	}
+
+	/**
+		Helper Function to Fix Save Files for Flixel 5
+
+		-- EDIT: [November 29, 2023] --
+
+		this function is used to get the save path, period.
+		since newer flixel versions are being enforced anyways.
+		@crowplexus
+	**/
+	@:access(flixel.util.FlxSave.validate)
+	inline public static function getSavePath():String {
+		final company:String = FlxG.stage.application.meta.get('company');
+		// #if (flixel < "5.0.0") return company; #else
+		return '${company}/${flixel.util.FlxSave.validate(FlxG.stage.application.meta.get('file'))}';
+		// #end
 	}
 
 	public static inline function getFileStringFromPath(file:String):String

@@ -306,7 +306,7 @@ class ChartingState extends MusicBeatState
 		if(curSec >= _song.notes.length) curSec = _song.notes.length - 1;
 
 		FlxG.mouse.visible = true;
-		//FlxG.save.bind('funkin', 'ninjamuffin99');
+		//FlxG.save.bind('funkin', CoolUtil.getSavePath());
 
 		tempBpm = _song.bpm;
 
@@ -1111,17 +1111,22 @@ class ChartingState extends MusicBeatState
 		for (i in 0...directories.length) {
 			var directory:String =  directories[i];
 			if(FileSystem.exists(directory)) {
-				for (file in FileSystem.readDirectory(directory)) {
-					var path = haxe.io.Path.join([directory, file]);
-					if (!FileSystem.isDirectory(path) && file.endsWith('.lua')) {
-						var fileToCheck:String = file.substr(0, file.length - 4);
-						if(!noteTypeMap.exists(fileToCheck)) {
-							displayNameList.push(fileToCheck);
-							noteTypeMap.set(fileToCheck, key);
-							noteTypeIntMap.set(key, fileToCheck);
-							key++;
+				try{
+					for (file in FileSystem.readDirectory(directory)) {
+						var path = haxe.io.Path.join([directory, file]);
+						if (!FileSystem.isDirectory(path) && file.endsWith('.lua')) {
+							var fileToCheck:String = file.substr(0, file.length - 4);
+							if(!noteTypeMap.exists(fileToCheck)) {
+								displayNameList.push(fileToCheck);
+								noteTypeMap.set(fileToCheck, key);
+								noteTypeIntMap.set(key, fileToCheck);
+								key++;
+							}
 						}
 					}
+				}catch(err){
+					trace("[DirErr] Error at directory:["+directory+"]"); 
+					trace("[DirErr] "+err);
 				}
 			}
 		}

@@ -10,8 +10,8 @@ import openfl.system.System;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
+import openfl.utils.Assets;
 import openfl.utils.Assets as OpenFlAssets;
-import lime.utils.Assets;
 import flixel.FlxSprite;
 #if sys
 import sys.io.File;
@@ -66,21 +66,28 @@ class Paths
 		// clear non local assets in the tracked assets list
 		for (key in currentTrackedAssets.keys()) {
 			// if it is not currently contained within the used local assets
-			if (!localTrackedAssets.contains(key)
-				&& !dumpExclusions.contains(key)) {
-				// get rid of it
+			if (!localTrackedAssets.contains(key) && !dumpExclusions.contains(key)) {
 				var obj = currentTrackedAssets.get(key);
 				@:privateAccess
 				if (obj != null) {
-					openfl.Assets.cache.removeBitmapData(key);
+					// remove the key from all cache maps
 					FlxG.bitmap._cache.remove(key);
-					obj.destroy();
+					openfl.Assets.cache.removeBitmapData(key);
 					currentTrackedAssets.remove(key);
+					// and get rid of the object
+					obj.persist = false; // make sure the garbage collector actually clears it up
+					obj.destroyOnNoUse = true;
+					obj.destroy();
 				}
 			}
 		}
 		// run the garbage collector for good measure lmfao
 		System.gc();
+		#if cpp
+		cpp.NativeGc.run(true);
+		#elseif hl
+		hl.Gc.major();
+		#end
 	}
 
 	// define the locally tracked assets
@@ -121,6 +128,15 @@ class Paths
 
 	public static function getPath(file:String, type:AssetType, ?library:Null<String> = null)
 	{
+		#if MODS_ALLOWED
+		var customFile:String = file;
+		if (library != null)
+			customFile = '$library/$file';
+
+		var modded:String = modFolders(customFile);
+		if(FileSystem.exists(modded)) return modded;
+
+		#end
 		if (library != null)
 			return getLibraryPath(file, library);
 
@@ -419,32 +435,39 @@ class Paths
 	}
 
 	public static var currentTrackedSounds:Map<String, Sound> = [];
-	public static function returnSound(path:String, key:String, ?library:String) {
+	public static function returnSound(path:Null<String>, key:String, ?library:String) {
 		#if MODS_ALLOWED
-		var file:String = modsSounds(path, key);
+		var modLibPath:String = '';
+		if (library != null) modLibPath = '$library/';
+		if (path != null) modLibPath += '$path';
+
+		var file:String = modsSounds(modLibPath, key);
 		if(FileSystem.exists(file)) {
-			if(!currentTrackedSounds.exists(file)) {
+			if(!currentTrackedSounds.exists(file))
+			{
 				currentTrackedSounds.set(file, Sound.fromFile(file));
+				//trace('precached mod sound: $file');
 			}
-			localTrackedAssets.push(key);
+			localTrackedAssets.push(file);
 			return currentTrackedSounds.get(file);
 		}
 		#end
 		// I hate this so god damn much
-		var gottenPath:String = getPath('$path/$key.$SOUND_EXT', SOUND, library);
+		var gottenPath:String = '$key.$SOUND_EXT';
+		if(path != null) gottenPath = '$path/$gottenPath';
+		gottenPath = getPath(gottenPath, SOUND, library);
 		gottenPath = gottenPath.substring(gottenPath.indexOf(':') + 1, gottenPath.length);
 		// trace(gottenPath);
 		if(!currentTrackedSounds.exists(gottenPath))
-		#if MODS_ALLOWED
-			currentTrackedSounds.set(gottenPath, Sound.fromFile('./' + gottenPath));
-		#else
 		{
-			var folder:String = '';
-			if(path == 'songs') folder = 'songs:';
-
-			currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)));
+			var retKey:String = (path != null) ? '$path/$key' : key;
+			retKey = ((path == 'songs') ? 'songs:' : '') + getPath('$retKey.$SOUND_EXT', SOUND, library);
+			if(Assets.exists(retKey, SOUND))
+			{
+				currentTrackedSounds.set(gottenPath, Assets.getSound(retKey));
+				//trace('precached vanilla sound: $retKey');
+			}
 		}
-		#end
 		localTrackedAssets.push(gottenPath);
 		return currentTrackedSounds.get(gottenPath);
 	}
@@ -482,6 +505,9 @@ class Paths
 		return modFolders('images/' + key + '.txt');
 	}
 
+	inline static public function modsImagesJson(key:String) {
+		return modFolders('images/' + key + '.json');
+	}
 	/* Goes unused for now
 
 	inline static public function modsShaderFragment(key:String, ?library:String)
@@ -554,11 +580,16 @@ class Paths
 		var list:Array<String> = [];
 		var modsFolder:String = mods();
 		if(FileSystem.exists(modsFolder)) {
-			for (folder in FileSystem.readDirectory(modsFolder)) {
-				var path = haxe.io.Path.join([modsFolder, folder]);
-				if (sys.FileSystem.isDirectory(path) && !ignoreModFolders.contains(folder) && !list.contains(folder)) {
-					list.push(folder);
+			try{
+				for (folder in FileSystem.readDirectory(modsFolder)) {
+					var path = haxe.io.Path.join([modsFolder, folder]);
+					if (sys.FileSystem.isDirectory(path) && !ignoreModFolders.contains(folder) && !list.contains(folder)) {
+						list.push(folder);
+					}
 				}
+			}catch(err){
+				trace("[DirErr] Error at directory:["+modsFolder+"]"); 
+				trace("[DirErr] "+err);
 			}
 		}
 		return list;

@@ -2863,10 +2863,15 @@ class FunkinLua {
 			var list:Array<String> = [];
 			#if sys
 			if(FileSystem.exists(folder)) {
-				for (folder in FileSystem.readDirectory(folder)) {
-					if (!list.contains(folder)) {
-						list.push(folder);
+				try{
+					for (folder in FileSystem.readDirectory(folder)) {
+						if (!list.contains(folder)) {
+							list.push(folder);
+						}
 					}
+				}catch(err){
+					trace("[DirErr] Error at directory:["+folder+"]"); 
+					trace("[DirErr] "+err);
 				}
 			}
 			#end
