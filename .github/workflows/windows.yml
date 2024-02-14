@@ -64,6 +64,10 @@ jobs:
           path: |
             export/release/windows/bin/PsychEngine.exe
             export/release/windows/bin/plugins
+            export/release/windows/bin/lime.ndll
+            export/release/windows/bin/libvlc.dll
+            export/release/windows/bin/libvlccore.dll
+            export/release/windows/bin/icon.ico
       - name: Clearing already existing cache
         uses: actions/github-script@v6
         with:
