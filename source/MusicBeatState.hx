@@ -50,6 +50,8 @@ class MusicBeatState extends FlxUIState
 		var nameNew = "menus/"+Type.getClassName(Type.getClass(this)).replace('State','Addons.hx');
 		trace(nameNew);
 		//makeFileDebug();
+		menuscripts = new script.ScriptGroup();
+		menuscriptData = [];
 		makeInterpreterGroup(
 			nameNew
 		);
@@ -126,11 +128,9 @@ class MusicBeatState extends FlxUIState
 
 	public function makeInterpreterGroup(file:String):Void
 	{
-		menuscripts = new script.ScriptGroup();
-		
-		var hx:Null<String> = null;
-		menuscriptData = [];
 
+		var hx:Null<String> = null;
+		
 		if (FileSystem.exists(file))
 			hx = File.getContent(file);
 
