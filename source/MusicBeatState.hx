@@ -53,6 +53,9 @@ class MusicBeatState extends FlxUIState
 		makeInterpreterGroup(
 			nameNew
 		);
+		makeInterpreterGroup(
+			"menus/MusicBeatAddons.hx"
+		);
 		
 		if(menuscripts!=null)
 			menuscripts.executeAllFunc("super_new", [this]);
@@ -64,10 +67,13 @@ class MusicBeatState extends FlxUIState
 		var skip:Bool = FlxTransitionableState.skipNextTransOut;
 		super.create();
 		
+		menuscripts.executeAllFunc("super_pretransition", [this]);
 		if(!skip) {
 			openSubState(new CustomFadeTransition(0.7, true));
 		}
 		FlxTransitionableState.skipNextTransOut = false;
+		menuscripts.executeAllFunc("super_create", [this]);
+
 	}
 
 	var first_run = 0;
@@ -196,6 +202,7 @@ class MusicBeatState extends FlxUIState
 
 	public static function switchState(nextState:FlxState) {
 		// Custom made Trans in
+		menuscripts.executeAllFunc("super_onSwitchState", [curStep]);
 		var curState:Dynamic = FlxG.state;
 		var leState:MusicBeatState = curState;
 		if(!FlxTransitionableState.skipNextTransIn) {
@@ -218,6 +225,7 @@ class MusicBeatState extends FlxUIState
 	}
 
 	public static function resetState() {
+		menuscripts.executeAllFunc("super_onReset", [curStep]);
 		MusicBeatState.switchState(FlxG.state);
 	}
 
