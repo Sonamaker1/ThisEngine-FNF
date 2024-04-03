@@ -152,7 +152,8 @@ class MusicBeatState extends FlxUIState
 				menuscripts.addScript(scriptName).executeString(hx);
 			else
 			{
-				menuscripts.getScriptByTag(scriptName).error("Duplicate Script Error!", '$scriptName: Duplicate Script');
+				trace('${scriptName} Duplicate');
+				//menuscripts.getScriptByTag(scriptName).error("Duplicate Script Error!", '$scriptName: Duplicate Script');
 			}
 		}
 	}
