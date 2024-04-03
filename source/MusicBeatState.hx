@@ -50,14 +50,10 @@ class MusicBeatState extends FlxUIState
 		var nameNew = "menus/"+Type.getClassName(Type.getClass(this)).replace('State','Addons.hx');
 		trace(nameNew);
 		//makeFileDebug();
-		menuscripts = new script.ScriptGroup();
-		menuscriptData = [];
 		makeInterpreterGroup(
 			nameNew
 		);
-		makeInterpreterGroup(
-			"menus/MusicBeatAddons.hx"
-		);
+
 		
 		if(menuscripts!=null)
 			menuscripts.executeAllFunc("super_new", [this]);
@@ -128,11 +124,17 @@ class MusicBeatState extends FlxUIState
 
 	public function makeInterpreterGroup(file:String):Void
 	{
-
-		var hx:Null<String> = null;
+		menuscripts = new script.ScriptGroup();
 		
+		var hx:Null<String> = null;
+		var hx2:Null<String> = null;
+		menuscriptData = [];
+
 		if (FileSystem.exists(file))
 			hx = File.getContent(file);
+
+		if (FileSystem.exists("menus/MusicBeatAddons.hx"))
+			hx2 = File.getContent("menus/MusicBeatAddons.hx");
 
 		if (hx != null)
 		{
@@ -145,6 +147,18 @@ class MusicBeatState extends FlxUIState
 			}
 		}
 		
+		if (hx2 != null)
+		{
+			trace("FOUND FILE 2");
+			var scriptName:String = CoolUtil.getFileStringFromPath(file);
+
+			if (!menuscriptData.exists(scriptName))
+			{
+				menuscriptData.set(scriptName, hx2);
+			}
+		}
+			
+		);
 		for (scriptName => hx in menuscriptData)
 		{
 			trace(scriptName);
@@ -152,8 +166,7 @@ class MusicBeatState extends FlxUIState
 				menuscripts.addScript(scriptName).executeString(hx);
 			else
 			{
-				trace('${scriptName} Duplicate');
-				//menuscripts.getScriptByTag(scriptName).error("Duplicate Script Error!", '$scriptName: Duplicate Script');
+				menuscripts.getScriptByTag(scriptName).error("Duplicate Script Error!", '$scriptName: Duplicate Script');
 			}
 		}
 	}
