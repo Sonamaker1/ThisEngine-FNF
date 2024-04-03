@@ -202,9 +202,9 @@ class MusicBeatState extends FlxUIState
 
 	public static function switchState(nextState:FlxState) {
 		// Custom made Trans in
-		menuscripts.executeAllFunc("super_onSwitchState", [curStep]);
 		var curState:Dynamic = FlxG.state;
 		var leState:MusicBeatState = curState;
+		leState.menuscripts.executeAllFunc("super_onSwitchState", [leState, nextState]);
 		if(!FlxTransitionableState.skipNextTransIn) {
 			leState.openSubState(new CustomFadeTransition(0.6, false));
 			if(nextState == FlxG.state) {
@@ -225,7 +225,9 @@ class MusicBeatState extends FlxUIState
 	}
 
 	public static function resetState() {
-		menuscripts.executeAllFunc("super_onReset", [curStep]);
+		var curState:Dynamic = FlxG.state;
+		var leState:MusicBeatState = curState;
+		leState.menuscripts.executeAllFunc("super_onReset", []);
 		MusicBeatState.switchState(FlxG.state);
 	}
 
