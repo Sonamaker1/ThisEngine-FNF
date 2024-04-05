@@ -1,1 +1,1 @@
-trace('menus/FreeplayAddons.hx has loaded succesfully')
+trace('menus/FreeplayAddons.hx has loaded successfully');

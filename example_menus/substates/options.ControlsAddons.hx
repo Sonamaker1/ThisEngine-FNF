@@ -1,1 +1,1 @@
-trace('menus/substates/options.ControlsAddons.hx has loaded succesfully')
+trace('menus/substates/options.ControlsAddons.hx has loaded successfully');

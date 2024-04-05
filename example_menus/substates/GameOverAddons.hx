@@ -1,1 +1,1 @@
-trace('menus/substates/GameOverAddons.hx has loaded succesfully')
+trace('menus/substates/GameOverAddons.hx has loaded successfully');

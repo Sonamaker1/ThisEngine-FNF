@@ -150,15 +150,14 @@ class MusicBeatState extends FlxUIState
 		if (hx2 != null)
 		{
 			trace("FOUND FILE 2");
-			var scriptName:String = CoolUtil.getFileStringFromPath(file);
+			var scriptName:String = CoolUtil.getFileStringFromPath("menus/MusicBeatAddons.hx");
 
-			if (!menuscriptData.exists(scriptName))
+			if (!menuscriptData.exists("MusicBeatAddons"))
 			{
-				menuscriptData.set(scriptName, hx2);
+				menuscriptData.set("MusicBeatAddons", hx2);
 			}
 		}
-			
-		);
+
 		for (scriptName => hx in menuscriptData)
 		{
 			trace(scriptName);

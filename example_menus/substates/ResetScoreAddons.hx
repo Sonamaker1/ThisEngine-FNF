@@ -1,1 +1,1 @@
-trace('menus/substates/ResetScoreAddons.hx has loaded succesfully')
+trace('menus/substates/ResetScoreAddons.hx has loaded successfully');

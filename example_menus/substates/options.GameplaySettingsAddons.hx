@@ -1,1 +1,1 @@
-trace('menus/substates/options.GameplaySettingsAddons.hx has loaded succesfully')
+trace('menus/substates/options.GameplaySettingsAddons.hx has loaded successfully');

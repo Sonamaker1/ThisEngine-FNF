@@ -1,1 +1,1 @@
-trace('menus/PlayAddons.hx has loaded succesfully')
+trace('menus/PlayAddons.hx has loaded successfully');

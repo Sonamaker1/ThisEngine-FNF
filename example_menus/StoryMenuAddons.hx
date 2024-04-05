@@ -1,1 +1,1 @@
-trace('menus/StoryMenuAddons.hx has loaded succesfully')
+trace('menus/StoryMenuAddons.hx has loaded successfully');

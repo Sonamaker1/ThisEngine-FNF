@@ -1,1 +1,1 @@
-trace('menus/substates/options.VisualsUIAddons.hx has loaded succesfully')
+trace('menus/substates/options.VisualsUIAddons.hx has loaded successfully');

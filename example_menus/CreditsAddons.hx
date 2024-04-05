@@ -1,1 +1,1 @@
-trace('menus/CreditsAddons.hx has loaded succesfully')
+trace('menus/CreditsAddons.hx has loaded successfully');

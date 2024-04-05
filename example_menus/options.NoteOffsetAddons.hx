@@ -1,1 +1,1 @@
-trace('menus/options.NoteOffsetAddons.hx has loaded succesfully')
+trace('menus/options.NoteOffsetAddons.hx has loaded successfully');

@@ -1,1 +1,1 @@
-trace('menus/TitleAddons.hx has loaded succesfully')
+trace('menus/TitleAddons.hx has loaded successfully');

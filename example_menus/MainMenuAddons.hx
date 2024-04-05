@@ -1,1 +1,1 @@
-trace('menus/MainMenuAddons.hx has loaded succesfully')
+trace('menus/MainMenuAddons.hx has loaded successfully');

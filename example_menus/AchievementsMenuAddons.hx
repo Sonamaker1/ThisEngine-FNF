@@ -1,1 +1,1 @@
-trace('menus/AchievementsMenuAddons.hx has loaded succesfully')
+trace('menus/AchievementsMenuAddons.hx has loaded successfully');

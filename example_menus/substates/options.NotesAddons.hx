@@ -1,1 +1,1 @@
-trace('menus/substates/options.NotesAddons.hx has loaded succesfully')
+trace('menus/substates/options.NotesAddons.hx has loaded successfully');

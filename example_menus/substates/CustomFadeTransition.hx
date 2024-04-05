@@ -1,1 +1,1 @@
-trace('menus/substates/CustomFadeTransition.hx has loaded succesfully')
+trace('menus/substates/CustomFadeTransition.hx has loaded successfully');

@@ -1,1 +1,1 @@
-trace('menus/options.OptionsAddons.hx has loaded succesfully')
+trace('menus/options.OptionsAddons.hx has loaded successfully');

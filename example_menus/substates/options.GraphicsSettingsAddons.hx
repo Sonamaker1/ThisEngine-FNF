@@ -1,1 +1,1 @@
-trace('menus/substates/options.GraphicsSettingsAddons.hx has loaded succesfully')
+trace('menus/substates/options.GraphicsSettingsAddons.hx has loaded successfully');
