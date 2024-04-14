@@ -114,7 +114,7 @@
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" version="2.4.0"/>
 	<haxelib name="linc_luajit" if="LUA_ALLOWED" version="git"/>
-	<haxelib name="hxCodec" version="3.0.2" if="VIDEOS_NOT_MAC"/>
+	<haxelib name="hxCodec" if="VIDEOS_NOT_MAC"/>
 	<haxelib name="hxCodec" if="mac" unless="32bits"/> <!-- I don't know if this will even work? -->
 	
 <haxelib name="faxe" if='switch'/>
