@@ -76,9 +76,7 @@ import sys.io.File;
 #end
 
 #if VIDEOS_ALLOWED
-#if (hxCodec == "3.0.2") import hxcodec.flixel.FlxVideo;
-#else import vlc.MP4Handler; #end
-
+import hxcodec.flixel.FlxVideo;
 #end
 
 using StringTools;
@@ -1229,7 +1227,6 @@ class PlayState extends MusicBeatState
 			startAndEnd();
 			return;
 		}
-		#if (hxCodec == "3.0.2") 
 
 		var video:FlxVideo = new FlxVideo();
 		video.play(filepath);
@@ -1239,17 +1236,6 @@ class PlayState extends MusicBeatState
 			startAndEnd();
 			return;
 		}, true);
-		#else 
-		var video:MP4Handler = new MP4Handler();
-		video.playVideo(filepath);
-		video.finishCallback = function()
-		{
-			startAndEnd();
-			return;
-		}
-			
-		#end
-			
 		#else
 		FlxG.log.warn('Platform not supported!');
 		startAndEnd();
