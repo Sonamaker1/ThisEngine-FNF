@@ -41,9 +41,7 @@ class CreditsState extends MusicBeatState
 	//formerly named "pisspoop"
 	public static var globalCreditsNames:Array<Array<String>> = [ //Name - Icon name - Description - Link - BG Color
 		['This Engine Credits'],
-		['Winn',			'winn',			'Programmer for fun.\nMade this engine version for a few mods',	'https://twitter.com/DreadPirateWinn',	'a19aea'],
-		['Ne_Eo',			'neo',			'Multiple Engine Fixes, \nHScript Import function and support',		'https://twitter.com/Ne_Eo_Twitch',	'282627'],
-		['Lunar', 			'lunar', 		'HScript script file Management Code', 				'https://twitter.com/lunarcleint', 	'6757f3'],
+		['Winn',			'winn',			'Programmer for fun.\nMade this engine version for a few mods',	'https://www.youtube.com/@whatify9636',	'a19aea'],
 		['Everyone Else I\'ve met', 	'discord', 		'This is for you all!\nNew stuff is added for everyone I meet ^-^', '', 					'A1A1A1'],
 		[''],
 		['Psych Engine Team'],
