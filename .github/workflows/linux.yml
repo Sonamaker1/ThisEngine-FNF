@@ -57,12 +57,12 @@ jobs:
         run: |
           haxelib run lime build linux
       - name: Uploading artifact (entire build)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ThisEngineBuild
           path: export/release/linux/bin
       - name: Uploading artifact (executable)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: Update-Linux
           path: |
