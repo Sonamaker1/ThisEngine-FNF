@@ -31,3 +31,7 @@ art/build_html-debug.bat
 
 ### Merging versions from main repo
 FNF-PsychEngine-main/*
+
+### Fraps Specific
+bin/*
+FOH.hl

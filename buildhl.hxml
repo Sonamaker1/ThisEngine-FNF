@@ -1,0 +1,13 @@
+-lib heaps
+-lib hlsdl
+-lib hlopenal
+-lib slide
+-lib hscript
+
+-cp src
+-hl FRAPS.hl
+-main Main
+
+-D windowTitle=Fraps
+-D windowSize=1280x720
+# -D hl-profile
