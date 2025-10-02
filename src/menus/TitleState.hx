@@ -30,24 +30,24 @@ class TitleState extends MusicBeatState {
 
         Conductor.changeBPM(88);
 
-        Main.ME.engine.backgroundColor = 0xFF00FF22;
+        Main.ME.engine.backgroundColor = 0xFF000000;
 
         bg = new Bitmap(Paths.image("menus/titleBG"));
         addObj(bg);
 
         logo = new AnimatedSprite(0, 0, Paths.image("menus/logoBumpin"));
         logo.animation.loop = false;
-        logo.addAnimation("bump", "logo bumpin", null, true);
+        logo.addAnimation("bump", "logo bumpin", false, null, true);
         addObj(logo);
 
         speakers = new AnimatedSprite(375, 85, Paths.image("menus/titleDance"));
         speakers.animation.loop = false;
-        speakers.addAnimation("bop", "boppy", null, true);
+        speakers.addAnimation("bop", "boppy", false, null, true);
         addObj(speakers);
 
         enterText = new AnimatedSprite(112.5, 590, Paths.image("menus/titleEnter"));
         enterText.animation.loop = true;
-        enterText.addAnimation("loop", "Press Enter to Begin", null, true);
+        enterText.addAnimation("loop", "Press Enter to Begin", false, null, true);
         enterText.addAnimation("enter", "ENTER PRESSED");
         addObj(enterText);
     }

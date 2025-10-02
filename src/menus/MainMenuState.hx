@@ -17,7 +17,7 @@ enum Direction {
 class MainMenuState extends MusicBeatState {
     var bg:Bitmap;
 
-    var optionsArray:Array<String> = ["story", "freeplay", "options"];
+    var optionsArray:Array<String> = ["story_mode", "freeplay", "mods", "credits", "options", "achievements"];
 
     var menuOptions:Array<AnimatedSprite> = [];
     var storyMode:AnimatedSprite;
@@ -25,25 +25,34 @@ class MainMenuState extends MusicBeatState {
     var options:AnimatedSprite;
 
     var curSelected:Int = 0;
-
+    public static final screenWidth:Int = 1280;
+    public static final screenHeight:Int = 720;
+    
     public function new() {
         super();
 
-        bg = new Bitmap(Paths.image("mainMenu/menuBG"));
+        bg = new Bitmap(Paths.image("main_menu/menuBG"));
         addObj(bg);
 
-        for (i in 0...3) {
+        for (i in 0...optionsArray.length) {
             
             //var menuOption:AnimatedSprite = new AnimatedSprite(0, 50 + 225 * i, Res.images.mainMenu.mainMenu_png.toTile());
-            var menuOption:AnimatedSprite = new AnimatedSprite(0, 50 + 225 * i, Paths.image("menus/mainMenu.png"));
+            var menuOption:AnimatedSprite = new AnimatedSprite(screenWidth/2, 90 + 140 * i, Paths.image('main_menu/menu_${optionsArray[i]}') );
             
-            menuOption.addAnimation("idle", '${optionsArray[i]} small');
-            menuOption.addAnimation("selected", '${optionsArray[i]}');
+            menuOption.addAnimation("idle", '${optionsArray[i]} idle', true, null, true );
+            menuOption.addAnimation("selected", '${optionsArray[i]} selected',true, null, true);
             menuOption.playAnimation("idle");
 
-            if (i == 0) menuOption.setScale(0.75);
-
-            menuOption.x = (Window.getInstance().width - menuOption.getBounds().width) / 2;
+            if (i == 0) menuOption.setScale(0.95);
+            menuOption.x = (screenWidth) / 2;
+            
+            var checkThese = ["options", "achievements"];
+            var indexThese = checkThese.indexOf(optionsArray[i]);
+            if(indexThese > -1){
+                menuOption.y = 60 + 140 * (i - indexThese);
+                menuOption.x = screenWidth*3/4 + indexThese*150 + 50;
+                menuOption.setScale(0.70);
+            }
             menuOptions.push(menuOption);
             addObj(menuOptions[i]);
         }
@@ -57,24 +66,39 @@ class MainMenuState extends MusicBeatState {
 
         if (Key.isPressed(Key.UP)) moveSelection(UP);
 
+        if (Key.isPressed(Key.RIGHT)) moveSelection(DOWN);
+        if (Key.isPressed(Key.LEFT)) moveSelection(UP);
+
         if (Key.isPressed(Key.ENTER)) {
             // if (TitleState.song != null) TitleState.song.pause = true;
-            changeScene(new TestState());
+            changeScene(new TitleState());
+        }
+
+        if (Key.isPressed(Key.BACKSPACE)) {
+            // if (TitleState.song != null) TitleState.song.pause = true;
+            changeScene(new TitleState());
         }
     }
 
     function moveSelection(direction:Direction) {
         GLGU.playSound("scrollMenu");
+        var lastSelected = Std.int(curSelected);
         if (direction != NONE) direction == UP ? curSelected-- : curSelected++;
+        curSelected = (curSelected + menuOptions.length ) % menuOptions.length;
+        
+        menuOptions[curSelected].playAnimation("selected");
+        menuOptions[lastSelected].playAnimation("idle");
+
         for (i in 0...menuOptions.length) {
-            /**
-             * TODO: Make this work slightly differently, since the idle animation restarts every time this function is called
-             */
-            if (i == curSelected)
-                menuOptions[curSelected].playAnimation("selected");
-            else
-                menuOptions[i].playAnimation("idle");
-            menuOptions[i].x = (Window.getInstance().width - menuOptions[i].getBounds().width) / 2;
+            var menuOption = menuOptions[i];            
+            menuOption.x = (screenWidth) / 2;
+            
+            var checkThese = ["options", "achievements"];
+            var indexThese = checkThese.indexOf(optionsArray[i]);
+            if(indexThese > -1){
+                menuOption.x = screenWidth*3/4 + indexThese*150 + 50;
+            }
+            //menuOptions[i].x = (screenWidth - menuOptions[i].getBounds().width) / 2;
         }
     }
 }

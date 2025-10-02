@@ -92,21 +92,21 @@ class AlphabetChar extends AnimatedSprite {
     }
 
     function createSymbol() {
-        if (symbolReferences.get(char) == null) addAnimation(char, char, null, true);
-        else addAnimation(char, symbolReferences.get(char), null, true);
+        if (symbolReferences.get(char) == null) addAnimation(char, char, false, null, true);
+        else addAnimation(char, symbolReferences.get(char), false, null, true);
 
     }
 
     function createNumber() {
-        addAnimation(char, char, null, true);
+        addAnimation(char, char, false, null, true);
     }
 
     function createLetter() {
-        addAnimation(char, char + " lowercase", null, true);
+        addAnimation(char, char + " lowercase", false, null, true);
     }
 
     function createBold() {
-        addAnimation(char.toUpperCase(), char.toUpperCase() + " bold", null, true);
+        addAnimation(char.toUpperCase(), char.toUpperCase() + " bold", false, null, true);
     }
 
     public function getLetter() {

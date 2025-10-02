@@ -55,18 +55,29 @@ class AnimatedSprite extends FNFObject {
      * @param name The name of the animation you wish to add.
      * @param prefix The name of the animation in the XML file.
      * @param offset An X and Y offset to give the animation. Can also be added later by calling `addOffsetToAnimation`.
+     * @param centered Boolean. Center the animation offset based on the width and height of the first frame
      * @param playAnimAfterAddition Whether or not to play the animation after being added.
      */
-    public function addAnimation(name:String, prefix:String, ?offset:Array<Int>, ?playAnimAfterAddition:Bool) {
+    public function addAnimation(name:String, prefix:String, ?centered:Bool =false, ?offset:Array<Int>, ?centered:Bool =false, ?playAnimAfterAddition:Bool=false) {
         // The animations we'll push to the animations map
         var anims:Array<Tile> = [];
+        var frameX0000:Int= 0;
+        var frameY0000:Int= 0;
         for (child in xml.elements()) {
             // The element we're parsing.
             var thisChild:String = child.get("name");
 
             // Removes the leading 0s at the end of the animation name.
             var childSubstr = thisChild.substring(0, thisChild.length - 4);
-
+            if(centered && thisChild.substring(thisChild.length - 4, thisChild.length) == "0000"){
+                frameX0000 = Std.int( 
+                    (Std.parseInt(child.get("width")) - Std.parseInt(child.get("frameX") ))/2
+                );
+                frameY0000 = Std.int(
+                    (Std.parseInt(child.get("height")) + Std.parseInt(child.get("frameY") ))/2
+                );
+            }
+            
             // Does the name we're parsing match that of the prefix?
             if (childSubstr == prefix) {
                 var frame:Tile = image.sub( Std.parseInt(child.get("x")), 
@@ -76,8 +87,12 @@ class AnimatedSprite extends FNFObject {
                                            -Std.parseInt(child.get("frameX")),
                                            -Std.parseInt(child.get("frameY")) );
                 if (offset != null) {
-                    frame.dx += offset[0];
-                    frame.dy += offset[1];
+                    frame.dx += -1*frameX0000 + offset[0];
+                    frame.dy += -1*frameY0000 + offset[1];
+                }
+                else {
+                    frame.dx -= frameX0000;
+                    frame.dy -= frameY0000;
                 }
                 anims.push(frame);
             }

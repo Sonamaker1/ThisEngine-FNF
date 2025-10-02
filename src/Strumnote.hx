@@ -32,7 +32,7 @@ class Strumnote extends AnimatedSprite {
         animation.loop = false;
 
         // addAnimation("staticLeft", "arrowLEFT");
-        addAnimation("static" + GLGU.capitalize(noteToDisplay), "arrow" + noteToDisplay.toUpperCase(), null, true);
+        addAnimation("static" + GLGU.capitalize(noteToDisplay), "arrow" + noteToDisplay.toUpperCase(), false, null, true);
 
         //addAnimation("missLeft", "left press");
         addAnimation("miss" + GLGU.capitalize(noteToDisplay), noteToDisplay.toLowerCase() + " press");

@@ -105,7 +105,7 @@ class MusicBeatState extends Scene {
 		super.onAdd();
 		GLogger.success("Added scene " + Type.getClassName(Type.getClass(this)).split('.').pop());
 
-		scaleMode = ScaleMode.Stretch(1280, 720);
+		scaleMode = ScaleMode.LetterBox(1280, 720);
         defaultSmooth = true;
 
 		scenesToUpdate.push(this);
@@ -134,6 +134,20 @@ class MusicBeatState extends Scene {
 		lastObj = object;
 		if (layer == null) add(object, Layers.layerGame);
 		else add(object, layer);
+	}
+
+	/**
+	 * Please note this doesn't really work as well as I want it to right now
+	 * Adds an object to a specific index on a specific layer. 
+	 * By default this layer is `Layers.layerGame`.
+	 * @param object The object to add.
+	 * @param index This objects index.
+	 * @param layer This objects layer.
+	 */
+	function insertObj(object:Object, ?index:Int, ?layer:Int) {
+		lastObj = object;
+		if (layer == null) add(object, Layers.layerGame, index);
+		else add(object, layer, index);
 	}
 
 	@:noCompletion

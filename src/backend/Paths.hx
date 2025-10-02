@@ -16,6 +16,7 @@ class Paths {
     public static function image(key:String, ?dontLog:Bool = false, ?returnTile:Bool = true):Dynamic {
         var no_key = "missingImage_default_reallylongnameIhopenobodyuses";
         if (!sys.FileSystem.exists("res/images/" + key + ".png")){
+            trace('res/images/${key}.png was not found, please add a file at this location');
             key = no_key;
         }
         
@@ -29,22 +30,31 @@ class Paths {
             return graphicCache.get(key);
         }
         
+        try{
+            var tileToReturn = Res.load("images/" + key + ".png").toImage().toTile();
+            graphicCache.set(key, tileToReturn);
+            GLogger.info('Set $key in graphicCache');
+            if (returnTile) return tileToReturn;
+        }
+        catch(err){
+            GLogger.error('Could not load ${'key'} (but file exists)');
+            return graphicCache.get(no_key);
+        }
         
-        var tileToReturn = Res.load("images/" + key + ".png").toImage().toTile();
-
-        graphicCache.set(key, tileToReturn);
-        GLogger.info('Set $key in graphicCache');
-
-        if (returnTile) return tileToReturn;
-
         return 'res/$key.png';
     }
 
     public static function cacheGraphic(key:String) {
         if (!graphicCache.exists(key)) {
-            var tileToReturn = Res.load("images/" + key + ".png").toImage().toTile();
-            graphicCache.set(key, tileToReturn);
-            GLogger.success('Sucessfully cached graphic ($key)');
+            try{
+                var tileToReturn = Res.load("images/" + key + ".png").toImage().toTile();
+                graphicCache.set(key, tileToReturn);
+                GLogger.success('Sucessfully cached graphic ($key)');
+            }
+            catch(err){
+                GLogger.error('Could not cache ${'key'}');
+            }
+            
         }
         else GLogger.warning('The tile you\'re trying to cache already exists in the cache ($key)');
     }
@@ -75,6 +85,7 @@ class Paths {
 
     public static function checkFileContent(path:String, ?type:String = ""):Dynamic {
         if(!sys.FileSystem.exists(path)){
+            GLogger.error('Could not find ${'path'}.${type}');
             switch(type){
                 case "xml": return sys.io.File.getContent("res/internal/missing_texture.xml"); 
                 case "json": return sys.io.File.getContent("res/internal/missing_texture.json"); 
