@@ -76,7 +76,7 @@ class MusicBeatState extends Scene {
 		topLayerCamera.layerVisible = (layer) -> layer == Layers.layerTop;
 
 		fps = new Text(DefaultFont.get());
-        fps.scale(2);
+        fps.scale(1);
         addObj(fps, Layers.layerTop);
 		
 		trace("Opened new scene.");

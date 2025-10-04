@@ -53,7 +53,7 @@ class Main extends App {
 		});
 		// Window.getInstance().vsync = false;
 
-		setScene(new Cache());
+		setScene(new MainMenuState());
 	}
 
 	override function update(dt:Float) {

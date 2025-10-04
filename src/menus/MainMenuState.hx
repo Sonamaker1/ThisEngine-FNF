@@ -7,11 +7,23 @@ import objects.AnimatedSprite;
 import hxd.Res;
 import h2d.Bitmap;
 import backend.MusicBeatState;
+import h3d.scene.Mesh;
+import h3d.Camera;
+import h3d.scene.CameraController;
 
 enum Direction {
     UP;
     DOWN;
     NONE;
+}
+
+abstract Degree(Float){
+  public inline function new (value:Float) this = value;
+  public inline function toRadians() return this * Math.PI/180;
+}
+
+inline function toRads(degrees:Float){
+    return degrees * Math.PI/180;
 }
 
 class MainMenuState extends MusicBeatState {
@@ -27,12 +39,55 @@ class MainMenuState extends MusicBeatState {
     var curSelected:Int = 0;
     public static final screenWidth:Int = 1280;
     public static final screenHeight:Int = 720;
-    
+    var mesh:Mesh;
+    var povVect = new h3d.Vector(0,0.08663,-15.73);
+    var cameraController:CameraController;
+    var s3dCamera:Camera;
+
+    //Pos: {-14.75,0.7519,13.82}, Pov: {0,0.08663,-15.73} 
+    public function setup3DObjects(){
+        s3dCamera = Main.ME.s3d.camera;
+
+        var cache = new h3d.prim.ModelCache();
+        // Add a model library to cache.
+        // This is optional, because `loadModel` and `loadAnimation` add it to cache automatically.
+        // Returns hxd.fmt.hmd.Library
+        cache.loadLibrary(hxd.Res.test_scene.FNFStage);
+        // Create a model instance. Compared to manual model creation, ModelCache loads textures automatically.
+        var mesh = cache.loadModel(hxd.Res.test_scene.FNFStage);
+        for (materialObj in mesh.getMaterials()){
+            materialObj.props = materialObj.getDefaultProps("ui");
+            // @:privateAccess(h3d.mat.Material) {
+            //     materialObj.set_blendMode(BlendMode.Alpha);
+
+            // }
+            //materialObj = 1.0;
+        }
+        // Optional: scale/position
+        mesh.setPosition(0, 0, 0);
+        mesh.setScale(1);
+        //obj.setRotationAxis(0, 0, 1, new Degree(180).toRadians());
+        //obj.setRotationAxis(1, 0, 0, new Degree(180).toRadians());
+
+        Main.ME.engine.backgroundColor = 0xFF51305b;
+        Main.ME.s3d.addChild(mesh);
+
+        s3dCamera.up.set(mesh.x, mesh.y, mesh.z);
+        // s3dCamera.follow.pos = mesh;
+        // s3dCamera.follow.target = mesh;
+
+        // Position the camera back a bit so it can see the cube
+        s3dCamera.pos.set(-14.75,0,13.82);
+        s3dCamera.up.set(0, 0, new Degree(180).toRadians());
+        s3dCamera.update();
+    }
+
     public function new() {
         super();
 
-        bg = new Bitmap(Paths.image("main_menu/menuBG"));
-        addObj(bg);
+        setup3DObjects();
+        //bg = new Bitmap(Paths.image("main_menu/menuBG"));
+        //addObj(bg);
 
         for (i in 0...optionsArray.length) {
             
@@ -59,7 +114,8 @@ class MainMenuState extends MusicBeatState {
 
         moveSelection(NONE);
     }
-
+    
+    var globalDelta = 0.0;
     override function update(dt:Float) {
         super.update(dt);
         if (Key.isPressed(Key.DOWN)) moveSelection(DOWN);
@@ -78,6 +134,11 @@ class MainMenuState extends MusicBeatState {
             // if (TitleState.song != null) TitleState.song.pause = true;
             changeScene(new TitleState());
         }
+        globalDelta += dt;
+        var povShiftZ = -toRads(90) - toRads(120) * Math.sin(globalDelta/2.5)/2;
+        var povShiftY = -toRads(80) - toRads(80) * Math.sin(globalDelta/5) *4;
+        s3dCamera.target.set( s3dCamera.pos.x + 25 + povVect.x , s3dCamera.pos.y +povVect.y + povShiftY, s3dCamera.pos.z +povVect.z + povShiftZ);
+
     }
 
     function moveSelection(direction:Direction) {
