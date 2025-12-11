@@ -455,8 +455,8 @@ class TitleState extends MusicBeatState
 			case "pressedEnter": return pressedEnter();
 			case "pressedEnterToSkip": return pressedEnter();
 			case "pressedEnterToGame": return pressedEnter();
-			case "UI_RIGHT": return controls.UI_LEFT;
-			case "UI_LEFT": return controls.UI_RIGHT;
+			case "UI_RIGHT": return controls.UI_RIGHT;
+			case "UI_LEFT": return controls.UI_LEFT;
 			default: return false;
 		}
 	}
